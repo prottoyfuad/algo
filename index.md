@@ -1,4 +1,3 @@
-# .algo
 
 ```
 This is a respiratory for for my CP stuff.
@@ -7,3 +6,4 @@ This respiratory includes, but not limited to :
 - Data Structures
 - Some well known tricks
 ```
+# [View the github respiratory](https://github.com/prottoyfuad/.algo)
