@@ -1,3 +1,4 @@
+
 #include <bits/stdc++.h>
 
 template <typename T> struct Segtree {
@@ -54,6 +55,7 @@ using namespace std;
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
+
     int n = 10;
     Segtree<int> segTree(0, n);
     
@@ -64,4 +66,3 @@ int main() {
 
   return 0;
 }
- 
