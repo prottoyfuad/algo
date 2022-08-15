@@ -15,16 +15,16 @@ template <typename T> std::string to_hex(T a, char lower = 0) {
   return std::string(hex.rbegin(), hex.rend());
 }
 
-std::vector<int> to_base(int a, int b) {
-  std::vector<int> res;
-  int p = 1;
-  while (p * b <= a) p *= b;
-  while (a) {
-    int d = a / p;
-    res.push_back(d);
-    a -= p * d, p /= b;
+std::vector<int> to_base(long long a, int b) {
+  int k = 1;
+  long long p = 1;
+  while (p * b <= a) p *= b, k += 1;
+  std::vector<int> res(k);
+  for (int i = 0; i < k; i++) {
+    res[i] = a / p;
+    a -= p * res[i];
+    p /= b;
   }
-  if (res.empty()) res.push_back(0);
   return res;
 }
 
