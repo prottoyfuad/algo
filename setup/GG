@@ -1,5 +1,0 @@
-#!/bin/bash
-g++ -std=c++11 -DLOCAL "$1"/sol.cpp -o "$1"/sol
-time ./"$1"/sol
-rm -f ./"$1"/sol
- 

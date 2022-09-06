@@ -1,0 +1,5 @@
+#!/bin/bash
+g++ -DLOCAL sol.cpp -o sol
+time ./sol
+rm -f ./sol
+ 
