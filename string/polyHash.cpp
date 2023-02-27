@@ -1,15 +1,4 @@
 
-/*
-    forward_hash(prefix) was tested;
-    reversed_hash(suffix) not yet
-    should be fine
-*/
-
-#include <vector>
-#include <chrono>
-#include <cassert>
-#include <iostream>
-
 struct custom_hash {
   // http://xorshift.di.unimi.it/splitmix64.c
   static uint64_t splitmix64(uint64_t x) {
@@ -24,6 +13,49 @@ struct custom_hash {
     return splitmix64(x + FIXED_RANDOM);
   }
 };
+
+//SIMPLE            
+
+struct PolyHash {
+  static const int L = 2;
+  const int base = 1e5 + 343;
+  const int P[L] = {(int) 1e9 + 97, (int) 1e9 + 123}; 
+  std::vector<std::vector<int>> power;
+  std::vector<std::vector<int>> pre;
+  int n;
+                        
+  PolyHash() : n(0) {} 
+  template <typename T_container> PolyHash(const T_container& a) : power(L), pre(L) {
+    n = (int) a.size();
+    for (int j = 0; j < L; j++) {
+      power[j].resize(n + 1);
+      pre[j].resize(n + 1);
+      power[j][0] = 1;
+      pre[j][0] = 0;
+      for (int i = 0; i < n; i++) {
+        power[j][i + 1] = power[j][i] * 1ll * base % P[j];
+        pre[j][i + 1] = (pre[j][i] * 1ll * base % P[j]) + a[i];
+        if (pre[j][i + 1] >= P[j]) pre[j][i + 1] -= P[j];
+      }
+    }
+  }    
+  std::bitset<32 * L> get(int l, int r) {
+    assert(0 <= l && l <= r && r <= n);
+    std::bitset<32 * L> h;
+    for (int j = 0; j < L; j++) {
+      int x = pre[j][r] - (pre[j][l] * 1ll * power[j][r - l] % P[j]);
+      if (x < 0) x += P[j];
+      h = h << 32 | std::bitset<32 * L>(x);
+    }
+    return h;
+  }
+};
+                              
+/*extended with reversed hash
+    forward_hash(prefix) was tested;
+    reversed_hash(suffix) not yet
+    should be fine
+*/
 
 template <const auto base, const auto mod> struct PolyHash {
   int n;

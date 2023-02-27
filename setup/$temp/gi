@@ -1,9 +1,0 @@
-#!/bin/bash
-g++ -DLOCAL sol.cpp -o sol
-for file in "$@"; do
-	echo 
-	echo "<< $file ::"
-	time ./sol <$file
-done
-rm -f ./sol
- 

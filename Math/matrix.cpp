@@ -1,17 +1,21 @@
 
 #include <bits/stdc++.h>
 
-const int mod = 1e9 + 7;
+const int P = 1e9 + 7;
 
 template <typename T> struct Matrix {
   int n, m;
   std::vector<std::vector<T>> mat;
-  Matrix(int n_ = 0, int m_ = 0) : n(n_), m(m_) {
+  Matrix() {}
+  Matrix(int n_, int m_) : n(n_), m(m_) {
     mat = std::vector<std::vector<T>> (n, std::vector<T> (m));
   }
   Matrix(const std::vector<std::vector<T>>& v) : mat(v) {
     n = static_cast<int> (mat.size());
-    m = static_cast<int> (mat[0].size());
+    if (n == 0) m = 0;
+    else {
+      m = static_cast<int> (mat[0].size());
+    }
   }
   static Matrix<T> identity(int _n) {
     assert(_n > 0);
@@ -29,8 +33,10 @@ template <typename T> struct Matrix {
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < m; j++) {
         for (int k = 0; k < o.m; k++) {
-          ret.mat[i][k] += (1ll * mat[i][j] * o.mat[j][k]) % mod;
-          ret.mat[i][k] %= mod;
+          ret.mat[i][k] += (mat[i][j] * 1ll * o.mat[j][k]) % P;
+          if (ret.mat[i][k] >= P) {
+            ret.mat[i][k] -= P;
+          }
         }
       }
     }
@@ -49,7 +55,7 @@ template <typename T> struct Matrix {
   } 
 };
 
-template <typename T, typename U> Matrix<T> bin_pow(Matrix<T> mat, U p) {
+template <typename T, typename U> Matrix<T> power(Matrix<T> mat, U p) {
   assert(p >= 0 && mat.is_square());
   Matrix<T> ret = Matrix<T>::identity(mat.n);
   while (p > 0) {
@@ -59,15 +65,9 @@ template <typename T, typename U> Matrix<T> bin_pow(Matrix<T> mat, U p) {
   return ret;
 }
 
-int main() {
-  using namespace std;
-  ios::sync_with_stdio(false);
-  cin.tie(0);
-  #ifdef _DEBUG
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-  #endif
+using namespace std;
 
+int main() {
   Matrix<int> a(2, 3);
   a.mat = {{1, 0, 1}, {0, 1, 2}};
   
@@ -78,10 +78,10 @@ int main() {
   auto fibonacci = [&](int x) {
     vector<vector<int64_t>> v = {{0, 1}, {1, 1}};
     Matrix<int64_t> m(v);
-    cout << bin_pow(m, x) << '\n';
+    cout << power(m, x) << '\n';
   };
 
-  const int nax = 1e6;
+  const int nax = 5;
   for (int i = 0; i < nax; i++) fibonacci(i);
   return 0;
 }
