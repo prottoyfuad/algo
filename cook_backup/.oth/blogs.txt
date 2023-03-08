@@ -1,0 +1,40 @@
+
+# Classic bitmask dp                   
+https://codeforces.com/blog/entry/337?locale=en
+
+# Segment trees
+https://codeforces.com/blog/entry/18051 
+
+# Biconnected components
+https://codeforces.com/blog/entry/68138
+
+# Gaussian elimination
+https://en.wikipedia.org/wiki/Gaussian_elimination (example explained)
+https://cp-algorithms.com/linear_algebra/linear-system-gauss.html (programming, precision, modulo 2 version)
+https://codeforces.com/blog/entry/68953 (detailed explanation on algebra behind bitwise Gaussian Elimination)
+
+# Math for CP
+https://codeforces.com/blog/entry/77137 (youtube tutorial series)
+
+# Books
+	1. The Hitchhiker’s Guide - https://comscigate.com/Books/contests/icpc.pdf
+
+
+# Categories to check                   
+   
+  Difference Array
+  DP optimizations - CHT and oths.
+  Cyclic DP with linear algebra
+  Divide and conquer - Meet in the middle
+  DS - sqrt decomposition, persistent structures, Policy-Based, Trie, Treap
+  Combinatorics, probability, EV
+  Game theory - NIM, Grundy
+  String Algorithms - Suff Array &oth
+  Geometry - points, dot-cross product, convex hull
+  Matrices         
+  Graphs - Dijkstra, Floyd, Bellman, SCC, bridges, matching, flows, 2-SAT
+  Randomized algorithms
+  Trees - bottom-up dp, LCA, Centroid decomposition, HLD
+  FFT
+  Chinese remainder theorem
+  Gaussian elimination

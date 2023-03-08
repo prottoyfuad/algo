@@ -6,8 +6,8 @@
 const long long P = 998244353;
                                
 struct Segtree {       
-  int low, high, mid;
-  Segtree *l, *r;
+  int low, high;
+  Segtree *lhs, *rhs;
                       
   using T = long long;
   using U = std::pair<long long, long long>;
@@ -21,80 +21,85 @@ struct Segtree {
     return (u + v) % P;
   }
 
-  void add_cost(U cost) {
+  void add(U cost) {
+    value *= cost.first;
+    value %= P;
+    value += cost.second * (high - low);
+    value %= P;
+
     save.first *= cost.first;
     save.first %= P;
     save.second *= cost.first;
     save.second += cost.second;
     save.second %= P;
-  }
-
-  void mapping(U cost) {
-    value *= cost.first;
-    value %= P;
-    value += cost.second * (high - low);
-    value %= P;
   }     
 
   Segtree(int low, int high) : low(low), high(high) {
-    mid = (low + high) / 2;
+    int mid = (low + high) >> 1;
     value = def_value;
     save = def_save;
-    if (low + 1 == high) {
-      l = nullptr;
-      r = nullptr;
+    if (low + 1 < high) {
+      lhs = new Segtree(low, mid);
+      rhs = new Segtree(mid, high);
     } else {
-      l = new Segtree(low, mid);
-      r = new Segtree(mid, high);
+      lhs = nullptr;
+      rhs = nullptr;
     }
   }
 
   ~Segtree() {
     if (low + 1 < high) {
-      delete l;
-      delete r;
+      delete lhs;
+      delete rhs;
     }
   }
 
   inline void push() {
-    if (save != def_save && low + 1 < high) {                                 
-      l->mapping(save);
-      l->add_cost(save);
-      r->mapping(save);
-      r->add_cost(save);  
+    if (save != def_save) {
+      if (low + 1 < high) {                                 
+        lhs->add(save);
+        rhs->add(save);
+      }  
       save = def_save;
     }
   }
 
   void apply(int x, int y, U v) {
+    if (x >= y) {
+      return;
+    }
     if (low >= x && high <= y) {
-      mapping(v); 
-      add_cost(v);
+      add(v);
       return;
     }
     push();
+    int mid = (low + high) >> 1;
     if (x < mid) {
-      l->apply(x, std::min(y, mid), v);
+      lhs->apply(x, std::min(y, mid), v);
     }
     if (mid < y) {
-      r->apply(std::max(x, mid), y, v);
+      rhs->apply(std::max(x, mid), y, v);
     }
-    value = unite(l->value, r->value);
+    value = unite(lhs->value, rhs->value);
   }
 
-  T get(int x, int y) {                                                                   
+  T get(int x, int y) {
+    if (x >= y) {
+      return def_value;
+    }                                                                   
     if (low >= x && high <= y) { 
       return value;
     }
     push();
+    int mid = (low + high) >> 1;
     T res = def_value;
     if (x < mid) {
-      res = unite(l->get(x, std::min(y, mid)), res);
+      res = unite(lhs->get(x, std::min(y, mid)), res);
     }
     if (mid < y) {
-      res = unite(res, r->get(std::max(x, mid), y));
+      res = unite(res, rhs->get(std::max(x, mid), y));
     }
-    value = unite(l->value, r->value);
+    value = unite(lhs->value, rhs->value);
     return res;
   }
 };
