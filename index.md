@@ -1,6 +1,6 @@
 
 ```
-This is a respiratory for for my CP stuff.
+This is a repository for for my CP stuff.
 This respiratory includes, but not limited to :
 - Algorithms
 - Data Structures
