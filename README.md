@@ -1,4 +1,4 @@
-# .algo
+# algo
 
 ```
 This is a respiratory for for my CP stuff.
