@@ -3,6 +3,13 @@
 
 using namespace std;
 
+/*           
+phi(n) = MULT of all [(p-1) * {p ^ (k-1)}] // prime(p) k times in factorization(n)
+implementing directly this way division occurs less (probably, seems like it :3)
+but the below implementation is better for extending the idea to generate totient as well
+*/
+
+// From SSRS
 long long totient(long long x) {
   long long ans = x;
   for (long long i = 2; i * i <= x; i++) {

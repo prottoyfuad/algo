@@ -1,5 +1,4 @@
 // WITHOUT COMPS
-
 struct SCC {
   int k;
   std::vector<int> id;                
@@ -45,8 +44,8 @@ struct SCC {
     for (int i : order) {
       if (!used[i]) {        
         dfs2(rev, i);   
-        k += 1;
       }
+      k += 1;
     }                     
   }
   int operator[] (int v) {
