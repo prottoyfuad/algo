@@ -1,3 +1,8 @@
+
+#include <vector>
+#include <cassert>
+#include <algorithm>
+
 // WITHOUT COMPS
 struct SCC {
   int k;
