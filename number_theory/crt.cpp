@@ -69,11 +69,12 @@ using namespace std;
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);  
+  srand(time(0));
   vector<long long> P = {2, 3, 5, 7, 11, 13, 17, 19, 23};
   int K = P.size();
   vector<long long> C(K);
   for (int i = 0; i < K; i++) {
-    C[i] = abs(rand()) % P[i];
+    C[i] = abs(rand() << 15 | rand()) % P[i];
   }
   auto [ans, is_solvable] = atcoder::crt(C, P);
   cout << ans << '\n';

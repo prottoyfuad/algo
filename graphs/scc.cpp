@@ -53,7 +53,7 @@ struct SCC {
         for (int v : comps.back()) {
           id[v] = k;
         }
-        k++;
+        k += 1;
       }
     }
     used.clear();
@@ -116,9 +116,9 @@ struct SCC {
     used = std::vector<bool> (n);
     for (int i : order) {
       if (!used[i]) {        
-        dfs2(rev, i);   
+        dfs2(rev, i); 
+        k += 1;  
       }
-      k += 1;
     }                     
   }
   int operator[] (int v) {
