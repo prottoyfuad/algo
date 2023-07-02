@@ -3,6 +3,65 @@
 #include <iostream>
 #include <algorithm>
 
+//WITHOUT COMPS
+struct SCC {
+  int k;
+  std::vector<int> id;                
+  std::vector<int> order;
+  std::vector<bool> used;
+  void dfs1(std::vector<std::vector<int>>& E, int v) {
+    used[v] = 1;
+    for (int u : E[v]) {
+      if (!used[u]) {
+        dfs1(E, u);
+      }
+    }
+    order.push_back(v);
+  }  
+  void dfs2(std::vector<std::vector<int>>& E, int v) {
+    used[v] = 1;              
+    id[v] = k;
+    for (int u : E[v]) {
+      if (!used[u]) {
+        dfs2(E, u);
+      }
+    }
+  }  
+  SCC() : k(0) {}
+  SCC(std::vector<std::vector<int>>& E) : k(0) {
+    int n = E.size();
+    used = std::vector<bool> (n);
+    order.reserve(n); 
+    for (int i = 0; i < n; i++) {
+      if (!used[i]) {
+        dfs1(E, i);
+      }
+    }
+    std::reverse(order.begin(), order.end());    
+    std::vector<std::vector<int>> rev(n);
+    for (int i = 0; i < n; i++) {
+      for (int u : E[i]) {
+        rev[u].push_back(i);
+      }
+    }
+    id = std::vector<int> (n);
+    used = std::vector<bool> (n);
+    for (int i : order) {
+      if (!used[i]) {        
+        dfs2(rev, i); 
+        k += 1;  
+      }
+    }                     
+  }
+  int operator[] (int v) {
+    return id[v];
+  }
+  int size() {                   
+    return k;
+  }
+};
+
+// WITH COMPS
 struct SCC {
   std::vector<int> id;
   std::vector<std::vector<int>> comps;
@@ -70,67 +129,7 @@ struct SCC {
   }
 };
 
-// WITHOUT COMPS
-
-struct SCC {
-  int k;
-  std::vector<int> id;                
-  std::vector<int> order;
-  std::vector<bool> used;
-  void dfs1(std::vector<std::vector<int>>& E, int v) {
-    used[v] = 1;
-    for (int u : E[v]) {
-      if (!used[u]) {
-        dfs1(E, u);
-      }
-    }
-    order.push_back(v);
-  }  
-  void dfs2(std::vector<std::vector<int>>& E, int v) {
-    used[v] = 1;              
-    id[v] = k;
-    for (int u : E[v]) {
-      if (!used[u]) {
-        dfs2(E, u);
-      }
-    }
-  }  
-  SCC() : k(0) {}
-  SCC(std::vector<std::vector<int>>& E) : k(0) {
-    int n = E.size();
-    used = std::vector<bool> (n);
-    order.reserve(n); 
-    for (int i = 0; i < n; i++) {
-      if (!used[i]) {
-        dfs1(E, i);
-      }
-    }
-    std::reverse(order.begin(), order.end());    
-    std::vector<std::vector<int>> rev(n);
-    for (int i = 0; i < n; i++) {
-      for (int u : E[i]) {
-        rev[u].push_back(i);
-      }
-    }
-    id = std::vector<int> (n);
-    used = std::vector<bool> (n);
-    for (int i : order) {
-      if (!used[i]) {        
-        dfs2(rev, i); 
-        k += 1;  
-      }
-    }                     
-  }
-  int operator[] (int v) {
-    return id[v];
-  }
-  int size() {                   
-    return k;
-  }
-};
-
 //EXPERIMENTAL IMPLEMENTATION
-
 struct strongly_connected_components {
   template <typename T> using digraph = std::vector<std::vector<T>>;
   char built;
