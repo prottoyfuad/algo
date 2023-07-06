@@ -23,7 +23,8 @@ so in equation, g = ax + by, value of the coefficients are-
 
 // SIMPLE
 
-template <typename T> std::array<T, 3> ext_gcd(T a, T b) {
+template <typename T = long long> 
+std::array<T, 3> ext_gcd(T a, T b) {
   if (b == 0) return {a, 1, 0};
   auto [d, x, y] = ext_gcd(b, a % b);
   return {d, y, x - y * (a / b)};
@@ -57,18 +58,7 @@ T inverse(T a, T m) {
 }
 // !tourist
 
-// cp algo
-int ext_gcd(int a, int b, int& x, int& y) {
-  if(b == 0) {
-    x = 1, y = 0;
-    return a;
-  }
-  int x1, y1;
-  int g = ext_gcd(b, a % b, x1, y1);
-  x = y1;
-  y = x1 - y1 * (a / b);
-  return g;
-}
+/*
 int ext_gcd_iterative(int a, int b, int& x, int& y) {
   x = 1, y = 0;
   int x1 = 0, y1 = 1, a1 = a, b1 = b;
@@ -80,6 +70,7 @@ int ext_gcd_iterative(int a, int b, int& x, int& y) {
   }
   return a1;
 }
+*/
 // !cp algo
 
 

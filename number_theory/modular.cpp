@@ -1,9 +1,9 @@
 
 #include <bits/stdc++.h>
 
-constexpr int P = 1e9 + 7;
+long long P = 1e9 + 7;
                       
-template <typename T> T power(T a, long long b) {
+template <typename T, typename U> T power(T a, U b) {
   T res = 1;
   while (b) {
     if (b & 1) res *= a;
@@ -13,23 +13,32 @@ template <typename T> T power(T a, long long b) {
   return res;
 }
 
+template <typename T> std::array<T, 3> euclid(T a, T b) {
+  if (b == 0) return {a, 1, 0};
+  auto [d, x, y] = euclid(b, a % b);
+  return {d, y, x - y * (a / b)};
+}
+
 struct Mint {
-  int x;
+private:
+  long long x;
+public:
   constexpr Mint() : x() {}
-  template <typename T> Mint(const T& v) {
-    x = static_cast<int>(abs(v) >= P ? v % P : v);
+  Mint(const long long& v) : x(v) {
+    if (abs(x) >= P) x %= P;
     if (x < 0) x += P;
   }                                                
-  int val() const { 
+  const long long operator()() const { 
     return x;
   }           
   Mint operator-() const {
-    Mint res;
-    res.x = P - x;
-    return res;
+    return Mint(-x);
   }
   Mint inv() const {
-    return power(*this, P - 2);
+    // if (primeP) return power(*this, P - 2);
+    auto [g, a, b] = euclid(x, P);
+    assert(g == 1); 
+    return Mint(a);
   }
   Mint& operator+=(const Mint &rhs) {
     x += rhs.x;
@@ -75,7 +84,7 @@ struct Mint {
     return is;
   }
   friend std::ostream& operator<<(std::ostream &os, const Mint &a) {
-    return os << a.val();
+    return os << a.x;
   }
 };
 
@@ -106,7 +115,7 @@ using namespace std;
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-         
+        
   return 0;
 }
  
