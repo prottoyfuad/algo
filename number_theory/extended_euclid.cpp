@@ -21,12 +21,10 @@ so in equation, g = ax + by, value of the coefficients are-
 
 */
 
-// SIMPLE
-
-template <typename T = long long> 
-std::array<T, 3> ext_gcd(T a, T b) {
+// SIMPLE       
+template <typename T> std::array<T, 3> euclid(T a, T b) {
   if (b == 0) return {a, 1, 0};
-  auto [d, x, y] = ext_gcd(b, a % b);
+  auto [d, x, y] = euclid(b, a % b);
   return {d, y, x - y * (a / b)};
 }
 
