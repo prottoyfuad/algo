@@ -22,18 +22,17 @@ template <typename T> struct Fenwick {
     return v;
   }
   int lower_bound(T v) {
-    int u = 0, p = 1 << std::__lg(n);
-    while (p) {
+    int u = 0;
+    for (int p = 1 << std::__lg(n); p > 0; p /= 2) {
       if (u + p <= n && tree[u + p - 1] < v) {
         u += p;
         v -= tree[u - 1];
-      }
-      p >>= 1;
+      }       
     }
     return u;
   }
 };
-// lb returns x -> sum(x - 1) <= v && sum(x) > v;
+// lb returns x -> sum(x - 1) < v && sum(x) >= v;
 
 template <typename T> struct Fenwick2D {
   int n, m;

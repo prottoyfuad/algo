@@ -20,14 +20,33 @@ using Ordered_set = __gnu_pbds::tree<T, __gnu_pbds::null_type, std::less<T>, __g
 #define debug(...)
 #endif
 
-auto random_address = []() -> uint64_t {
+long long floor_div(long long x, long long y) {
+  assert(y != 0);
+  if (y < 0) {
+    y = -y;
+    x = -x;
+  }
+  if (x >= 0) return x / y;
+  return (x + 1) / y - 1;
+}
+
+long long ceil_div(long long x, long long y) {
+  assert(y != 0);
+  if (y < 0) {
+    y = -y;
+    x = -x;
+  }
+  if (x <= 0) return x / y;
+  return (x - 1) / y + 1;
+}
+
+uint64_t random_address() {
   char* foo = new char;
   delete foo;
   return uint64_t(foo);
-};
-std::mt19937 rng((unsigned) std::chrono::system_clock::now().time_since_epoch().count() ^ random_address());
+}
 
-const int mod = 1e9 + 7;
+std::mt19937 rng((unsigned) std::chrono::system_clock::now().time_since_epoch().count() ^ random_address());
 
 int ext_euclid(int a, int b, int& x, int& y) {
   x = 1, y = 0;
@@ -52,9 +71,9 @@ int modinv(int a, int m) {
   return x;
 }
           
-// a better way :
-template <typename T>
-T inverse(T a, T m) {
+// a better way by tourist :
+// stuffs need normalization (using typename T = Modular is fine)
+template <typename T> T inverse(T a, T m) {
   T u = 0, v = 1;
   while (a != 0) {
     T q = m / a;
@@ -62,11 +81,12 @@ T inverse(T a, T m) {
     u -= q * v; std::swap(u, v);
   }
   assert(m == 1);
-  return u; // this needs normalization (using typename T = Modular is fine)
+  return u; 
 }
 
-void prefix_2D() {
-  using namespace std;
+using namespace std;
+
+void prefix_2D() {    
   int n, m;
   cin >> n >> m;
   vector a(n, vector<int> (m));
@@ -85,27 +105,29 @@ void prefix_2D() {
       pre[i + 1][j + 1] -= pre[i][j];
     }
   }
-  auto get_ones = [&](int u, int v, int x, int y) {
-    assert(x >= u && y >= v);
-    return pre[x + 1][y + 1] - pre[u][y + 1] - pre[x + 1][v] + pre[u][v];
-  };
-  auto total_cells = [&](int u, int v, int x, int y) {
+  auto cnt_cells = [&](int u, int v, int x, int y) {
     assert(x >= u && y >= v);
     return (x - u + 1) * (y - v + 1);
   };
-  auto get_zeroes = [&](int u, int v, int x, int y) {
+  auto cnt_ones = [&](int u, int v, int x, int y) {
     assert(x >= u && y >= v);
-    return total_cells(u, v, x, y) - get_ones(u, v, x, y);
+    return pre[x + 1][y + 1] - pre[u][y + 1] - pre[x + 1][v] + pre[u][v];
+  };
+  auto cnt_zeroes = [&](int u, int v, int x, int y) {
+    assert(x >= u && y >= v);
+    return cnt_cells(u, v, x, y) - cnt_ones(u, v, x, y);
   };
   int q;
   cin >> q;
   while (q--) {
     // do something
-    // like how many ones/zeroes in a rectangualar-submatrix
+    // like how many ones/zeroes in a submatrix
   }
 }
 
-int main() {
-  std::cout << int('z');
+int main() {                      
+  ios::sync_with_stdio(false);
+  cin.tie(0);
+
   return 0;
 }
