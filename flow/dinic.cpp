@@ -1,7 +1,6 @@
 
 #include <bits/stdc++.h>
                       
-
 /// IMPLEMEMNTATION 01
 
 template <typename Cap> struct Dinic {

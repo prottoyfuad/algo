@@ -15,8 +15,8 @@ template <typename T, typename U> struct Segtree {
     costs = std::vector<U> (m * 2 - 1);
   }
                        
-  template <typename U>
-  void build(const std::vector<U>& a) {
+  template <typename V>
+  void build(const std::vector<V>& a) {
     assert((int) a.size() == n);
     for (int i = 0; i < n; i++) {
       values[i + m - 1] = T(a[i]);
