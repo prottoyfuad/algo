@@ -1,14 +1,9 @@
-  
-#include <vector>
-#include <cassert>
-#include <iostream>
-#include <functional>
-
-using i64 = long long;
-using u64 = unsigned long long;
 
 class Bitset {
 private:
+  using i64 = long long;
+  using u64 = unsigned long long;
+
   i64 N, B;
   std::vector<u64> bits;
 
@@ -69,25 +64,25 @@ public:
     _clean();
   }
 
-  Bitset& operator&=(const Bitset& other) {
+  Bitset& operator&= (const Bitset& other) {
     return _composition(other, [](u64& to, const u64& from) {
       to &= from;
     });
   }
 
-  Bitset& operator|=(const Bitset& other) {
+  Bitset& operator|= (const Bitset& other) {
     return _composition(other, [](u64& to, const u64& from) {
       to |= from;
     });
   }
 
-  Bitset& operator^=(const Bitset& other) {
+  Bitset& operator^= (const Bitset& other) {
     return _composition(other, [](u64& to, const u64& from) {
       to ^= from;
     });
   }
 
-  Bitset& operator<<=(i64 shift) {
+  Bitset& operator<<= (i64 shift) {
     i64 div = shift >> 6;
     i64 mod = shift & 63;
     if (mod == 0) {
@@ -190,12 +185,3 @@ public:
   }
 };
 
-using namespace std;
-
-int main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);              
-
-  return 0;
-}
- 

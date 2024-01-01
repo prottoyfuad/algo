@@ -1,41 +1,54 @@
 
-#include <bits/stdc++.h>
-
 const int P = 1e9 + 7;
 
-template <typename T> struct Matrix {
+template <typename T> struct matrix {
   int n, m;
-  std::vector<std::vector<T>> mat;
-  Matrix() {}
-  Matrix(int n_, int m_) : n(n_), m(m_) {
-    mat = std::vector<std::vector<T>> (n, std::vector<T> (m));
+  std::vector<std::vector<T>> a;
+
+  matrix() {}
+  matrix(int n_, int m_) : n(n_), m(m_) {
+    a = std::vector<std::vector<T>> (n, std::vector<T> (m));
   }
-  Matrix(const std::vector<std::vector<T>>& v) : mat(v) {
-    n = static_cast<int> (mat.size());
-    if (n == 0) m = 0;
-    else {
-      m = static_cast<int> (mat[0].size());
+
+  matrix(const std::vector<std::vector<T>>& v) : a(v) {
+    n = static_cast<int> (a.size());
+    if (n == 0) {
+      m = 0;
+    } else {
+      m = static_cast<int> (a[0].size());
     }
   }
-  static Matrix<T> identity(int _n) {
+
+  static matrix<T> identity(int _n) {
     assert(_n > 0);
-    Matrix<T> ret(_n, _n);
-    for (int i = 0; i < _n; i++) ret.mat[i][i] = static_cast<T>(1);
+    matrix<T> ret(_n, _n);
+    for (int i = 0; i < _n; i++) {
+      ret.a[i][i] = static_cast<T>(1);
+    }
     return ret;
   }
-  bool is_square() const { return n == m; }
-  bool is_multipliable(const Matrix<T>& o) const { return m == o.n; }
-  std::vector<T>& operator[] (int at) { return mat[at]; }
 
-  Matrix<T> operator * (const Matrix<T>& o) const {
+  bool is_square() const { 
+    return n == m; 
+  }
+
+  bool is_multipliable(const matrix<T>& o) const { 
+    return m == o.n; 
+  }
+
+  std::vector<T>& operator[] (int at) { 
+    return a[at]; 
+  }
+
+  matrix<T> operator * (const matrix<T>& o) const {
     assert(is_multipliable(o));
-    Matrix<T> ret(n, o.m);
+    matrix<T> ret(n, o.m);
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < m; j++) {
         for (int k = 0; k < o.m; k++) {
-          ret.mat[i][k] += (mat[i][j] * 1ll * o.mat[j][k]) % P;
-          if (ret.mat[i][k] >= P) {
-            ret.mat[i][k] -= P;
+          ret.a[i][k] += (a[i][j] * 1ll * o.a[j][k]) % P;
+          if (ret.a[i][k] >= P) {
+            ret.a[i][k] -= P;
           }
         }
       }
@@ -43,11 +56,11 @@ template <typename T> struct Matrix {
     return ret;
   }
 
-  friend std::ostream& operator << (std::ostream& stream, const Matrix& o) {
+  friend std::ostream& operator << (std::ostream& stream, const matrix& o) {
     for (int i = 0; i < o.n; i++) {
       for (int j = 0; j < o.m; j++) {
         if (j > 0) stream << ' ';
-        stream << o.mat[i][j];
+        stream << o.a[i][j];
       }
       stream << '\n';
     }
@@ -55,12 +68,13 @@ template <typename T> struct Matrix {
   } 
 };
 
-template <typename T, typename U> Matrix<T> power(Matrix<T> mat, U p) {
-  assert(p >= 0 && mat.is_square());
-  Matrix<T> ret = Matrix<T>::identity(mat.n);
+template <typename T, typename U> matrix<T> power(matrix<T> a, U p) {
+  assert(p >= 0 && a.is_square());
+  matrix<T> ret = matrix<T>::identity(a.n);
   while (p > 0) {
-    if (p & 1) ret = ret * mat;
-    p >>= 1, mat = mat * mat;
+    if (p & 1) ret = ret * a;
+    a = a * a;
+    p /= 2;
   }
   return ret;
 }
@@ -68,16 +82,16 @@ template <typename T, typename U> Matrix<T> power(Matrix<T> mat, U p) {
 using namespace std;
 
 int main() {
-  Matrix<int> a(2, 3);
-  a.mat = {{1, 0, 1}, {0, 1, 2}};
+  matrix<int> a(2, 3);
+  a.a = {{1, 0, 1}, {0, 1, 2}};
   
-  Matrix<int> b({{3, 5}, {-1, 0}, {2, -1}});
+  matrix<int> b({{3, 5}, {-1, 0}, {2, -1}});
 
   cout << a * b << '\n';
 
   auto fibonacci = [&](int x) {
     vector<vector<int64_t>> v = {{0, 1}, {1, 1}};
-    Matrix<int64_t> m(v);
+    matrix<int64_t> m(v);
     cout << power(m, x) << '\n';
   };
 

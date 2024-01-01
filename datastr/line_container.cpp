@@ -1,41 +1,43 @@
 
-#include <set>
-#include <cassert>
-#include <iostream>
-
 /** 
- * Line Container - Copied & Modified from KACTL library
- * Author      : Simon Lindholm
- * Date        : 2017-04-20
- * License     : CC0
- * Source      : own work
- * Time        : O(\log N)
- * Status      : stress-tested
- * Description : Container where you can add lines of the form kx+m, and query maximum values at points x.
-                 Useful for Optimizing DP (also known as, 'Convex Hull Trick').
+ * Line Container : Copied & Modified from KACTL library
+ * Author         : Simon Lindholm
+ * Date           : 2017-04-20
+ * License        : CC0
+ * Source         : own work
+ * Time           : O(\log N)
+ * Status         : stress-tested
+ * Description    : Container where you can add lines of the form kx+m, 
+ *                  and query maximum values at points x.
+ *                  Useful for Optimizing DP (also known as, 'Convex Hull Trick').
 **/
 
 inline long long floor_div(long long a, long long b) {
   return a / b - ((a ^ b) < 0 && a % b != 0); 
 }                         
 
-struct Line {
+struct line {
   mutable long long k, m, p;
-  Line(long long k_, long long m_, long long p_) : k(k_), m(m_), p(p_) {
+  line(long long k_, long long m_, long long p_) : k(k_), m(m_), p(p_) {
   }
-  bool operator < (const Line& o) const {
+
+  bool operator < (const line& o) const {
     return k < o.k;
   }
+
   bool operator < (long long x) const { 
     return p < x; 
   }
 };
+
 /*
-      for doubles, 
-      use inf = 1/.0 and floor_div(a, b) = a / b
+ * for doubles, 
+ * use inf = 1/.0 and floor_div(a, b) = a / b
 */
-struct Line_container : std::multiset<Line, std::less<>> {
+
+struct line_container : std::multiset<line, std::less<>> {
   static const long long inf = 8e18;       
+
   bool isect(iterator x, iterator y) {
     if (y == end()) {
       x->p = inf;
@@ -49,6 +51,7 @@ struct Line_container : std::multiset<Line, std::less<>> {
     }
     return x->p >= y->p;
   }
+
   void add(long long k, long long m) {
     auto z = emplace(k, m, 0);
     auto x = z, y = z++;       
@@ -62,19 +65,11 @@ struct Line_container : std::multiset<Line, std::less<>> {
       isect(x, erase(y));
     }
   }
+
   long long get(long long x) {
     assert(!empty());
     auto l = *lower_bound(x);
     return l.k * x + l.m;
   }
 };
-
-using namespace std;
-
-int main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
-
-  return 0;
-}
 

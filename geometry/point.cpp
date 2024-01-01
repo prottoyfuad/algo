@@ -66,4 +66,3 @@ template <typename T> struct Point {
   }
 };
  
- 

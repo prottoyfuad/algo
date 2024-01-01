@@ -3,7 +3,7 @@
                       
 /// IMPLEMEMNTATION 01
 
-template <typename Cap> struct Dinic {
+template <typename Cap> struct dinic {
   struct edge {
     int to, rev;
     Cap cap;
@@ -13,9 +13,9 @@ template <typename Cap> struct Dinic {
   int N;
   Cap inf;
   std::vector<std::vector<edge>> E;
-  Dinic() : inf(1e9) {
+  dinic() : inf(1e9) {
   }
-  Dinic(int n_, Cap inf_) : N(n_), inf(inf_), E(N) {
+  dinic(int n_, Cap inf_) : N(n_), inf(inf_), E(N) {
   }
   void add_edge(int from, int to, Cap cap) {
     E[from].emplace_back(to, E[to].size(), cap);
@@ -83,20 +83,20 @@ template <typename Cap> struct Dinic {
 
 /// IMPLEMEMNTATION 02
 
-template <typename T> struct Dinic {
-  struct Edge {
+template <typename T> struct dinic {
+  struct edge {
     int to;
     T cap;
-    Edge(int v = 0, T c = 0) : to(v), cap(c) {}
+    edge(int v = 0, T c = 0) : to(v), cap(c) {}
   };
   int n;
   T inf;
-  std::vector<Edge> edges;
+  std::vector<edge> edges;
   std::vector<std::vector<int>> E;
   std::vector<int> ptr, dist;
-  Dinic() {
+  dinic() {
   }
-  Dinic(int n_, T inf_) : n(n_), inf(inf_), E(n) {
+  dinic(int n_, T inf_) : n(n_), inf(inf_), E(n) {
   }
   void add_edge(int u, int v, T c) {
     E[u].push_back(edges.size());
@@ -154,16 +154,3 @@ template <typename T> struct Dinic {
   }
 };
 
-using namespace std;
-
-int main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
-  int tt;
-  cin >> tt;
-  while (tt--) {
-  
-  }
-  return 0;
-}
- 

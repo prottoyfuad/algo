@@ -2,7 +2,6 @@
 #include <vector>
 #include <cassert>
 #include <iostream>
-
 #include <algorithm>
 
 void fast_run() {

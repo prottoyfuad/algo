@@ -4,15 +4,15 @@
 #include <iostream>  
 #include <functional>
 
-template <typename T, typename U> struct Segtree {                                                          
+template <typename T, typename U> struct segtree {                                                          
   int m, n;
   std::vector<T> values;
-  std::vector<U> costs;
+  std::vector<U> weights;
 
-  Segtree(int s = 0) : m(1), n(s) {
+  segtree(int s = 0) : m(1), n(s) {
     while (m < n) m *= 2;                
     values = std::vector<T> (m * 2 - 1);
-    costs = std::vector<U> (m * 2 - 1);
+    weights = std::vector<U> (m * 2 - 1);
   }
                        
   template <typename V>
@@ -28,28 +28,28 @@ template <typename T, typename U> struct Segtree {
   }
 
   inline void push(int u, int l, int r) {
-    if (costs[u].empty()) {
+    if (weights[u].empty()) {
       return;
     }
     if (u < m - 1) {
       int mid = (l + r) >> 1;
       int v = u << 1;
       if (l < n) {
-        values[v + 1] += costs[u];                                   
-        costs[v + 1] += costs[u];
+        values[v + 1] += weights[u];                                   
+        weights[v + 1] += weights[u];
       }
       if (mid < n) { 
-        values[v + 2] += costs[u];                                
-        costs[v + 2] += costs[u];
+        values[v + 2] += weights[u];                                
+        weights[v + 2] += weights[u];
       }
     }
-    costs[u].clear();
+    weights[u].clear();
   }
 
   inline void pull(int u) {
     if (u < m - 1) {
       int v = u << 1;
-      assert(costs[u].empty());
+      assert(weights[u].empty());
       values[u] = values[v + 1] + values[v + 2];
     }    
   }
@@ -60,7 +60,7 @@ template <typename T, typename U> struct Segtree {
     }
     if (l >= L && r <= R) {
       values[u] += w;
-      costs[u] += w;
+      weights[u] += w;
       return;
     }
     push(u, l, r);
@@ -183,82 +183,70 @@ template <typename T, typename U> struct Segtree {
 
 using namespace std;
  
-struct cost_t {
+struct weight {
   // TODO args...
 
-  cost_t() {
+  weight() {
     clear();
   }
 
-  cost_t(args...) {
+  weight(args...) {
     // TODO
   }
   
-  // must be set to identity
   void clear() {
-    // TODO
+    // TODO must be set to identity
   } 
-  // necessary when identity value can not be determined
   bool empty() const {
-    // TODO
+    // TODO necessary when identity value can not be determined
   } 
-  void operator += (const cost_t& cost) {
+  void operator += (const weight& cost) {
     // TODO
   }
 };
                               
-struct value_t {
+struct node {
   // TODO args...
                             
-  value_t() {
+  node() {
     clear();
   }
                             
-  value_t(args...) {
+  node(args...) {
     // TODO
   }
 
-  // must be set to identity
   void clear() {
-    // TODO
+    // TODO must be set to identity
   }
 
-  // necessary when identity value can not be determined
   bool empty() const {      
-    // TODO
+    // TODO necessary when identity value can not be determined
   }                              
 
-  void operator += (const cost_t& cost) {
+  void operator += (const weight& cost) {
     if (cost.empty()) {
       return;
     }                   
     // TODO
   }
 
-  friend value_t operator+ (const value_t& lhs, const value_t& rhs) {
+  friend node operator+ (const node& lhs, const node& rhs) {
     if (rhs.empty()) {
       return lhs;
     }
     if (lhs.empty()) {
       return rhs;
     }
-    value_t res;
+    node res;
     // TODO merge `lhs` and `rhs` to calculate result
     return res;
   }
-};         
- 
-int main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
+}; 
 
-  int n;
-  cin >> n;
-  Segtree<value_t, cost_t> S(n);
-
+/*
+  segtree<node, weight> S(n);
   vector<T> base(n);
   S.build(base);
+*/
 
-  return 0;
-}
-  

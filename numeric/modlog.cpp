@@ -7,6 +7,7 @@
 // Discrete Logarithm from CP Algo
 // Returns minimum x for which, k * (a ^ x) % m = b % m 
 // Solution does not always exists (-1)
+
 int ModLog(int a, int b, int m) {
   a %= m;
   b %= m;

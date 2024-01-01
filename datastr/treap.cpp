@@ -16,12 +16,12 @@ uint64_t random_address() {
 std::mt19937 gen((unsigned) std::chrono::system_clock::now().time_since_epoch().count() ^ random_address());
 std::uniform_int_distribution<> range(0, N);
 
-struct Treap {
-  Treap *l, *r;
+struct treap {
+  treap *l, *r;
   int x, y, cnt;
-  Treap(int val = 0) : l(0), r(0), x(val), y(range(gen)), cnt(1) {
+  treap(int val = 0) : l(0), r(0), x(val), y(range(gen)), cnt(1) {
   }
-  ~Treap() {
+  ~treap() {
     if (l) delete l;
     if (r) delete r;
   }
@@ -30,10 +30,10 @@ struct Treap {
     if (l) cnt += l->cnt;
     if (r) cnt += r->cnt;  
   }            
-  static int size(Treap* v) {
+  static int size(treap* v) {
     return v ? v->cnt : 0;
   }
-  static std::pair<Treap*, Treap*> split(Treap* v, int k) {
+  static std::pair<treap*, treap*> split(treap* v, int k) {
     if (!v) return {};
     if (size(v->l) >= k) {
       auto p = split(v->l, k);
@@ -48,7 +48,7 @@ struct Treap {
       return {v, p.second};
     }
   }
-  static Treap* merge(Treap* a, Treap* b) {
+  static treap* merge(treap* a, treap* b) {
     if (!a) return b;
     if (!b) return a;
     if (a->y > b->y) {

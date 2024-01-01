@@ -1,11 +1,10 @@
-  
+
 #include <vector>
 #include <iostream>
 
-using i64 = long long;
-using u64 = unsigned long long;
-
-struct Bitset {
+struct Bitset2d {
+  using i64 = long long;
+  using u64 = unsigned long long;
   i64 N, B;
   std::vector<std::vector<u64>> bits;    
 
@@ -15,7 +14,7 @@ struct Bitset {
     bits.assign(B, std::vector<u64> (B, u64(0)));
   }
 
-  Bitset(i64 n) {
+  Bitset2d(i64 n) {
     init(n);
   }
 
@@ -31,7 +30,7 @@ struct Bitset {
     bits[xx][xy] = bits[xx][xy] | u64(1) << (8 * yx + yy);
   }
 
-  void or_equal(const Bitset& a) {
+  void or_equal(const Bitset2d& a) {
     for (i64 i = 0; i < B; i++) {
       for (i64 j = 0; j < B; j++) {
         bits[i][j] |= a.bits[i][j];
@@ -39,7 +38,7 @@ struct Bitset {
     }            
   }
 
-  void shift_left(const Bitset& a, const i64 shift) {
+  void shift_left(const Bitset2d& a, const i64 shift) {
     for (i64 i = 0; i < B; i++) {
       for (i64 j = 0; j < B; j++) {
         bits[i][j] = 0;
@@ -76,7 +75,7 @@ struct Bitset {
     }         
   }
   
-  void shift_up(const Bitset& a, const i64 shift) {    
+  void shift_up(const Bitset2d& a, const i64 shift) {    
     for (i64 i = 0; i < B; i++) {
       for (i64 j = 0; j < B; j++) {
         bits[i][j] = 0;
@@ -110,15 +109,18 @@ struct Bitset {
     }         
   }
   // similarly implement shift right and down
-  // look up 1D Bitset if necessary
+  // look up 1D Bitset2d if necessary
 };
 
-using namespace std;
 /*
-  Problem given an array tell if
-  all the prefix of the array can be 3 mutisets with equal sum
-  ** all the elements in the prefix should be included once in exactly one multiset
+ * A problem using this Bitset2d : given an array 
+ * for all the prefix of the array tell if,
+ * that prefix can be 3 partitioned into mutisets with equal sum.
+ * partitions does not need to be contiguous.
+ * all the elements in a prefix must be included exactly once in exactly one multiset
 */
+
+using namespace std;
                     
 constexpr int N = 5008;
 
@@ -131,7 +133,7 @@ int main() {
   for (int i = 0; i < n; i++) {
     cin >> a[i];
   }
-  Bitset f(N), x(N), y(N);     
+  Bitset2d f(N), x(N), y(N);     
   f.set(0, 0);
   int sum = 0;
   for (int i = 0; i < n; i++) { 
@@ -140,7 +142,7 @@ int main() {
     if (sum % 3 == 0 && f.get(sum / 3, sum / 3)) {
       ans = 1;
     } 
-    cout << ans << '\n';       
+    cout << ans << '\n'; // answer for prefix [0, i]
     x.shift_left(f, a[i]);
     y.shift_up(f, a[i]);
     f.or_equal(x);

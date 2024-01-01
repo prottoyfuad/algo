@@ -1,4 +1,4 @@
-# ~~~ C, C++
+# C, C++
 # Prerequisites
 *.d
 
@@ -65,3 +65,4 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
