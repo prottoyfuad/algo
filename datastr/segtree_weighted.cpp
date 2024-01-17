@@ -1,17 +1,12 @@
-  
-#include <vector>
-#include <cassert>  
-#include <iostream>  
-#include <functional>
 
 template <typename T, typename U> struct segtree {                                                          
   int m, n;
-  std::vector<T> values;
+  std::vector<T> tree;
   std::vector<U> weights;
 
   segtree(int s = 0) : m(1), n(s) {
     while (m < n) m *= 2;                
-    values = std::vector<T> (m * 2 - 1);
+    tree = std::vector<T> (m * 2 - 1);
     weights = std::vector<U> (m * 2 - 1);
   }
                        
@@ -19,10 +14,10 @@ template <typename T, typename U> struct segtree {
   void build(const std::vector<V>& a) {
     assert((int) a.size() == n);
     for (int i = 0; i < n; i++) {
-      values[i + m - 1] = T(a[i]);
+      tree[i + m - 1] = T(a[i]);
     }
-    for (int i = (int) values.size() - 1; i >= n + m - 1; i--) {
-      values[i] = T();
+    for (int i = (int) tree.size() - 1; i >= n + m - 1; i--) {
+      tree[i] = T();
     }
     for (int i = m - 2; i >= 0; i--) pull(i);
   }
@@ -35,11 +30,11 @@ template <typename T, typename U> struct segtree {
       int mid = (l + r) >> 1;
       int v = u << 1;
       if (l < n) {
-        values[v + 1] += weights[u];                                   
+        tree[v + 1] += weights[u];                                   
         weights[v + 1] += weights[u];
       }
       if (mid < n) { 
-        values[v + 2] += weights[u];                                
+        tree[v + 2] += weights[u];                                
         weights[v + 2] += weights[u];
       }
     }
@@ -50,7 +45,7 @@ template <typename T, typename U> struct segtree {
     if (u < m - 1) {
       int v = u << 1;
       assert(weights[u].empty());
-      values[u] = values[v + 1] + values[v + 2];
+      tree[u] = tree[v + 1] + tree[v + 2];
     }    
   }
 
@@ -59,7 +54,7 @@ template <typename T, typename U> struct segtree {
       return;
     }
     if (l >= L && r <= R) {
-      values[u] += w;
+      tree[u] += w;
       weights[u] += w;
       return;
     }
@@ -83,7 +78,7 @@ template <typename T, typename U> struct segtree {
       return T();
     }
     if (l >= L && r <= R) {
-      return values[u];
+      return tree[u];
     }
     push(u, l, r);
     int mid = (l + r) >> 1, v = u << 1;
@@ -107,7 +102,7 @@ template <typename T, typename U> struct segtree {
     push(u, l, r);
     int mid = (l + r) >> 1, v = u << 1;
     int res;
-    if (fun(values[v + 1])) {
+    if (fun(tree[v + 1])) {
       res = find_first_knowingly(fun, v + 1, l, mid);
     } else {
       res = find_first_knowingly(fun, v + 2, mid, r);
@@ -121,7 +116,7 @@ template <typename T, typename U> struct segtree {
       return -1;
     }
     if (l >= L && r <= R) {
-      if (!fun(values[u])) {
+      if (!fun(tree[u])) {
         return -1;
       }
       return find_first_knowingly(fun, u, l, r);
@@ -147,7 +142,7 @@ template <typename T, typename U> struct segtree {
     push(u, l, r);
     int mid = (l + r) >> 1, v = u << 1;
     int res;
-    if (fun(values[v + 2])) {
+    if (fun(tree[v + 2])) {
       res = find_last_knowingly(fun, v + 2, mid, r);
     } else {
       res = find_last_knowingly(fun, v + 1, l, mid);
@@ -161,7 +156,7 @@ template <typename T, typename U> struct segtree {
       return -1;
     }
     if (l >= L && r <= R) {
-      if (!fun(values[u])) {
+      if (!fun(tree[u])) {
         return -1;
       }
       return find_last_knowingly(fun, u, l, r);

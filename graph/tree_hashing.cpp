@@ -4,25 +4,27 @@
  *    https://codeforces.com/contest/763/problem/D
 **/
 
-// With bracket sequence polynomial hashing
-void DFS(int s, int p) {
-    sz[s] = 1;
-    for(int x : e[s]) {
-        if(x == p) continue;
-        DFS(x, s);
-        sz[s] += sz[x];
+/** With bracket sequence polynomial hashing
+void dfs(int v, int p) {
+  sub[v] = 1;
+  for (int u : e[v]) {
+    if (u != p) {
+      dfs(u, v);
+      sz[v] += sz[u];
     }
-    sort(e[s].begin(), e[s].end(), [](int a, int b) { return h[a] < h[b]; });
-    h[s] = {1, 1};
-    for(int x : e[s]) {
-        if(x == p) continue;
-        h[s] = mul(h[s], pw[sz[x] * 2]);
-        h[s] = add(h[s], h[x]);
+  }
+  sort(e[v].begin(), e[v].end(), [](int a, int b) { return h[a] < h[b]; });
+  h[v] = {1, 1};
+  for (int u : e[v]) {
+    if (u != p) {
+      h[v] = mul(h[v], pw[sz[u] * 2]);
+      h[v] = add(h[v], h[u]);
     }
-    h[s] = mul(h[s], base);
-    h[s] = add(h[s], make_pair(2, 2));
+  }
+  h[v] = mul(h[v], base);
+  h[v] = add(h[v], make_pair(2, 2));
 }
-// END
+**/
  
 #include <map>
 #include <vector> 
@@ -109,7 +111,7 @@ int main() {
   vector<int> R(N);
   for (int i = 0; i < N; i++) {
     R[i] = ((gen() % P[0]) + P[0]) % P[0];
-  }                 
+  }
   int n;
   cin >> n;
   vector<vector<int>> e(n);

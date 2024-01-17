@@ -3,12 +3,13 @@
 #include <cassert>
 #include <algorithm>
 
-// WITHOUT COMPS
+// Without comps and tree
 struct SCC {
   int k;
   std::vector<int> id;                
   std::vector<int> order;
   std::vector<bool> used;
+
   void dfs1(std::vector<std::vector<int>>& E, int v) {
     used[v] = 1;
     for (int u : E[v]) {
@@ -17,7 +18,8 @@ struct SCC {
       }
     }
     order.push_back(v);
-  }  
+  }
+
   void dfs2(std::vector<std::vector<int>>& E, int v) {
     used[v] = 1;              
     id[v] = k;
@@ -26,7 +28,8 @@ struct SCC {
         dfs2(E, u);
       }
     }
-  }  
+  }
+
   SCC() : k(0) {}
   SCC(std::vector<std::vector<int>>& E) : k(0) {
     int n = E.size();
@@ -53,9 +56,11 @@ struct SCC {
       }
     }                     
   }
+
   int operator[] (int v) {
     return id[v];
   }
+
   int size() {                   
     return k;
   }
@@ -90,3 +95,4 @@ struct Two_sat {
     return ans[v];
   }
 };
+
