@@ -16,7 +16,7 @@ struct custom_hash {
 
 //SIMPLE            
 
-struct PolyHash {
+struct Polyhash {
   static const int L = 2;
   const int base = 1e5 + 343;
   const int P[L] = {(int) 1e9 + 97, (int) 1e9 + 123}; 

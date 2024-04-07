@@ -64,7 +64,8 @@ void debug_(T x, Args... args) {
 
 } // End of namespace debugger
 
-#define debug_(...) debugger::debug_(__VA_ARGS__)
-#define debug(...) std::cout << __LINE__ << ". [" << #__VA_ARGS__ << "]: ", debug_(__VA_ARGS__)
+// #define debug_(...) debugger::debug_(__VA_ARGS__)
+#define debug(...) std::cout << __LINE__ << ". [" << #__VA_ARGS__ << "]: ", debugger::debug_(__VA_ARGS__)
+
 #endif
 
