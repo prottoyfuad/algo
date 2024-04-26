@@ -4,20 +4,21 @@
 
 using namespace std;
 
-vector<int> manacher_odd(const string& s) {
-  int n = (int) s.length();
-  vector<int> p(n);
-  int l = 0, r = 0;
-  for (int i = 0; i < n; i++) {
+vector<int> manacher_odd(string s) {
+  int N = (int) s.length();
+  s = "$" + s + "^";
+  vector<int> p(N + 2);
+  int l = 1, r = 1;
+  for (int i = 1; i <= N; i++) {
     p[i] = max(0, min(r - i, p[l + r - i]));
-    while (i - p[i] >= 0 && i + p[i] < n && s[i - p[i]] == s[i + p[i]]) {
+    while (s[i - p[i]] == s[i + p[i]]) {
       p[i] += 1;
     }
     if (i + p[i] > r) {
       l = i - p[i], r = i + p[i];
     }
   }
-  return p;
+  return vector<int>(p.begin() + 1, p.end() - 1);
 }
 
 vector<int> manacher(const string& s) {

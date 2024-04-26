@@ -54,3 +54,28 @@ struct dsu {
   }
 };
 
+// only path compression
+struct dsu {
+  int n;
+  std::vector<int> f;
+
+  dsu(int s) : n(s), f(s, -1) {}
+
+  int trace(int u) {
+    if (f[u] >= 0) {          
+      return f[u] = trace(f[u]);
+    }
+    return u;
+  }
+
+  int unite(int u, int v) {
+    u = trace(u);
+    v = trace(v);
+    if (u != v) {
+      f[v] += f[u];
+      f[u] = v;
+    }
+    return v;
+  }
+};
+
