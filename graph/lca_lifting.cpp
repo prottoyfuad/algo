@@ -18,46 +18,52 @@ int main() {
     E[v].push_back(u);
   }
   int L = 32 - __builtin_clz(n);
-  vector anc(n, vector<int> (L, -1));
-  vector<int> d(n), que(1);
+  vector anc(L, vector<int> (n, -1));
+  vector<int> dep(n);
+  vector<int> que(1);
   for (int i = 0; i < (int) que.size(); i++) {
     int v = que[i];
     for (int u : E[v]) {
-      if (anc[v][0] != u) {
-        d[u] = d[v] + 1;
-        anc[u][0] = v;
+      if (u != anc[0][v]) {
+        dep[u] = dep[v] + 1;
+        anc[0][u] = v;
         que.push_back(u);  
       }
     }
   }
   for (int j = 1; j < L; j++) {
     for (int i = 0; i < n; i++) {
-      if (anc[i][j - 1] != -1) {
-        anc[i][j] = anc[anc[i][j - 1]][j - 1];
+      if (anc[j - 1][i] != -1) {
+        anc[j][i] = anc[j - 1][anc[j - 1][i]];
       }
     }
   }
   auto get_anc = [&](int v, int k) {
     for (int j = L - 1; j >= 0; j--) {
       if (k >> j & 1) {
-        v = anc[v][j];
+        v = anc[j][v];
       }
     }
     return v;
   };
   auto get_lca = [&](int u, int v) {
-    if (d[u] > d[v]) swap(u, v);
-    v = get_anc(v, d[v] - d[u]);
+    if (dep[u] > dep[v]) {
+      swap(u, v);
+    }
+    v = get_anc(v, dep[v] - dep[u]);
     if (u == v) {
       return u;
     }
     for (int j = L - 1; j >= 0; j--) {
-      if (anc[u][j] ^ anc[v][j]) {
-        u = anc[u][j];
-        v = anc[v][j];
+      if (anc[j][u] ^ anc[j][v]) {
+        u = anc[j][u];
+        v = anc[j][v];
       }
     }
-    return anc[u][0];
+    return anc[0][u];
+  };
+  auto get_dist = [&](int u, int v) {
+    return dep[u] + dep[v] - 2 * dep[get_lca(u, v)];
   };
   return 0;
 }

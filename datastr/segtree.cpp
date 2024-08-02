@@ -4,7 +4,8 @@ template <typename T> struct segtree {
   std::vector<T> tree;
   segtree() : n() {}
   segtree(int s) : n(1) {
-    while (n < s) n *= 2;
+    // in this implementation n=s works too if find first is not used;
+    while (n < s) n *= 2; 
     tree.assign(n * 2 - 1, T());
   }
   void apply(int i, const T& w) {

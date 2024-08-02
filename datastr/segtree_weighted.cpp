@@ -26,17 +26,13 @@ template <typename T, typename U> struct segtree {
     if (weights[u].empty()) {
       return;
     }
-    if (u < m - 1) {
-      int mid = (l + r) >> 1;
-      int v = u << 1;
-      if (l < n) {
-        tree[v + 1] += weights[u];                                   
-        weights[v + 1] += weights[u];
-      }
-      if (mid < n) { 
-        tree[v + 2] += weights[u];                                
-        weights[v + 2] += weights[u];
-      }
+    assert(u < m - 1);
+    int v = u << 1;
+    tree[v + 1] += weights[u];
+    tree[v + 2] += weights[u];
+    if (v + 2 < m - 1) { // not pushing to leafs
+      weights[v + 1] += weights[u];
+      weights[v + 2] += weights[u];
     }
     weights[u].clear();
   }
@@ -190,10 +186,10 @@ struct weight {
   }
   
   void clear() {
-    // TODO must be set to identity
+    // TODO must; set to identity
   } 
   bool empty() const {
-    // TODO necessary when identity value can not be determined
+    // TODO must; set to identity
   } 
   void operator += (const weight& cost) {
     // TODO
@@ -212,11 +208,11 @@ struct node {
   }
 
   void clear() {
-    // TODO must be set to identity
+    // TODO use if necessary; set to identity
   }
 
   bool empty() const {      
-    // TODO necessary when identity value can not be determined
+    // TODO use if necessary; set to identity
   }                              
 
   void operator += (const weight& cost) {

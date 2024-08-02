@@ -51,6 +51,7 @@ template <const int A> struct Prefix_tree {
 
 // for adding number as the bits.
 // some xor stuff
+
 struct Prefix_tree {
   int bits;
   std::vector<std::array<int, 2>> childs;  
@@ -105,12 +106,3 @@ struct Prefix_tree {
   */
 };
 
-using namespace std;
-
-int main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
-  
-  return 0;
-}
- 

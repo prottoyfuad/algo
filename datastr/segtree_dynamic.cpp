@@ -24,7 +24,7 @@ struct Segtree {
   }
 
   static constexpr U def_weight() {
-    return std::make_pair(1LL, 0LL);
+    return std::make_pair(1ll, 0ll);
   }
 
   T value; 
@@ -57,33 +57,28 @@ struct Segtree {
     value %= P;
   }     
 
-  Segtree(int lo, int hi) : low(lo), high(hi) {
-    int mid = (low + high) / 2;
+  Segtree(int lo, int hi) : low(lo), high(hi), l(0), r(0) {
     value = def_value();
     weight = def_weight();
-    if (low + 1 == high) {
-      l = nullptr;
-      r = nullptr;
-    } else {
-      l = new Segtree(low, mid);
-      r = new Segtree(mid, high);
-    }
   }
 
   ~Segtree() {
-    if (low + 1 < high) {
-      delete l;
-      delete r;
-    }
+    if (l) delete l;
+    if (r) delete r;
   }
 
   inline void push() {
-    if (has_weight() && low + 1 < high) {                                 
-      l->mapping(weight);
-      l->add_cost(weight);
-      r->mapping(weight);
-      r->add_cost(weight);  
-      clear_weight();
+    if (low + 1 < high) {                                 
+      int mid = (low + high) >> 1;
+      if (!l) l = new Segtree(low, mid);
+      if (!r) r = new Segtree(mid, high);
+      if (has_weight()) {
+        l->mapping(weight);
+        l->add_cost(weight);
+        r->mapping(weight);
+        r->add_cost(weight);
+        clear_weight();
+      }
     }
   }
 
@@ -94,7 +89,7 @@ struct Segtree {
       return;
     }
     push();
-    int mid = (low + high) / 2;
+    int mid = (low + high) >> 1;
     if (x < mid) {
       l->apply(x, std::min(y, mid), v);
     }
@@ -109,7 +104,7 @@ struct Segtree {
       return value;
     }
     push();
-    int mid = (low + high) / 2;
+    int mid = (low + high) >> 1;
     T res = def_value();
     if (x < mid) {
       res = unite(l->get(x, std::min(y, mid)), res);
