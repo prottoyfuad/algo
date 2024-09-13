@@ -4,7 +4,7 @@ template <typename T> struct segtree {
   std::vector<T> tree;
   segtree() : n() {}
   segtree(int s) : n(1) {
-    // in this implementation n=s works too if find first is not used;
+    // in this implementation n=s works, when find is not used
     while (n < s) n *= 2; 
     tree.assign(n * 2 - 1, T());
   }
@@ -30,22 +30,22 @@ template <typename T> struct segtree {
   T operator[] (int i) { 
     return get(i, i + 1); 
   }
-  int find_first(const int L, const int R, int i, int l, int r) {
-    if (R <= l || r <= L || !t[i].good()) {
+  int find_first(const int L, const int R, const std::function<bool(const T&)>& fun, int i, int l, int r) {
+    if (R <= l || r <= L || !fun(tree[i])) {
       return -1;
     } 
     if (r - l == 1) { 
       return l;
     } 
     int m = (l + r) / 2, j = i * 2;
-    int lhs = find(L, R, x, j + 1, l, m);
+    int lhs = find_first(L, R, fun, j + 1, l, m);
     if (lhs != -1) {
       return lhs;
     }
-    return find(L, R, x, j + 2, m, r);
+    return find_first(L, R, fun, j + 2, m, r);
   }
-  int find(const int L, const int R) {
-    return find_first(L, R, 0, 0, n);
+  int find_first(const int L, const int R, const std::function<bool(const T&)>& fun) {
+    return find_first(L, R, fun, 0, 0, n);
   }
 };
 
@@ -58,10 +58,6 @@ struct node {
 
   friend node operator+ (const node& lhs, const node& rhs) {
     // merge nodes
-  }
-
-  bool good() {
-    // find condition
   }
 };
 

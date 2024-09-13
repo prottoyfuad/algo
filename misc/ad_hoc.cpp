@@ -40,6 +40,13 @@ long long ceil_div(long long x, long long y) {
   return (x - 1) / y + 1;
 }
 
+// from jiangly
+constexpr uint64_t mulMod(uint64_t a, uint64_t b, uint64_t P) {
+  uint64_t res = a * b - uint64_t(1.L * a * b / P - 0.5L) * P;
+  res %= P;
+  return res;
+}
+
 uint64_t random_address() {
   char* foo = new char;
   delete foo;
