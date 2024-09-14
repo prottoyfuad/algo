@@ -1,0 +1,11 @@
+#!/bin/bash
+if g++ -g -DLOCAL -Wall -Wextra -Wshadow asn.cpp -o asn; then
+  echo "compiled!"
+  echo
+  ulimit -s 524288 && ulimit -v 1048576 && time ./asn <in
+  rm -f ./asn
+  echo "done!"
+else
+  echo "compilation error!"
+fi
+

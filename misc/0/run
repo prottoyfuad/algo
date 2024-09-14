@@ -1,0 +1,8 @@
+#!/bin/bash
+if g++ -g -O2 -DLOCAL -Wall -Wextra -Wshadow $1 -o a; then
+  ulimit -s 524288 && ulimit -v 1048576 && time ./a
+  rm -f a
+else
+  echo "compilation error!"
+fi
+

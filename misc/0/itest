@@ -1,0 +1,8 @@
+#!/bin/bash
+g++ -g -DLOCAL -Wall -Wextra -Wshadow asn.cpp -o asn
+g++ -g -DLOCAL -Wall -Wextra -Wshadow ijudge.cpp -o ijudge
+python3 interactive_runner.py ./ijudge -- ./asn
+
+rm -f asn
+rm -f ijudge
+
