@@ -1,57 +1,70 @@
 
-template <typename T, typename U> struct segtree {                                                          
-  int m, n;
-  std::vector<T> tree;
-  std::vector<U> weights;
+template <typename T, typename U>
+struct Segtree {
+  int n, m;
+  std::vector<T> values;
+  std::vector<U> costs;
 
-  segtree(int s = 0) : m(1), n(s) {
-    while (m < n) m *= 2;                
-    tree = std::vector<T> (m * 2 - 1);
-    weights = std::vector<U> (m * 2 - 1);
+  Segtree(int s = 0) {
+    init(std::vector(s, T()));
   }
-                       
+
   template <typename V>
-  void build(const std::vector<V>& a) {
-    assert((int) a.size() == n);
+  void init(int s, const V& base) {
+    init(std::vector(s, base));
+  }
+
+  template <typename V>
+  Segtree(const std::vector<V>& base) {
+    init(base);
+  }
+
+  template <typename V>
+  void init(const std::vector<V>& base) {
+    n = (int) base.size();
+    m = 1;
+    while (m < n) {
+      m *= 2;
+    }
+    values.assign(m * 2 - 1, T());
+    costs.assign(m * 2 - 1, U());
     for (int i = 0; i < n; i++) {
-      tree[i + m - 1] = T(a[i]);
+      values[i + m - 1] = (T) base[i];
     }
-    for (int i = (int) tree.size() - 1; i >= n + m - 1; i--) {
-      tree[i] = T();
+    for (int i = m - 2; i >= 0; i--) {
+      pull(i);
     }
-    for (int i = m - 2; i >= 0; i--) pull(i);
   }
 
-  inline void push(int u, int l, int r) {
-    if (weights[u].empty()) {
-      return;
-    }
-    assert(u < m - 1);
+  void clear() {    
+    std::fill(values.begin(), values.end(), T());
+    std::fill(costs.begin(), costs.end(), U());
+  }
+
+  void pull(int u) {
     int v = u << 1;
-    tree[v + 1] += weights[u];
-    tree[v + 2] += weights[u];
-    if (v + 2 < m - 1) { // not pushing to leafs
-      weights[v + 1] += weights[u];
-      weights[v + 2] += weights[u];
-    }
-    weights[u].clear();
+    values[u] = values[v + 1] + values[v + 2];
   }
 
-  inline void pull(int u) {
-    if (u < m - 1) {
-      int v = u << 1;
-      assert(weights[u].empty());
-      tree[u] = tree[v + 1] + tree[v + 2];
-    }    
+  void push(int u, int l, int r) {
+    int mid = (l + r) >> 1, v = u << 1;
+    // l = std::min(l, n);
+    // r = std::min(r, n);
+    // mid = std::min(mid, n);
+    values[v + 1].apply(costs[u], l, mid);
+    values[v + 2].apply(costs[u], mid, r);
+    costs[v + 1].apply(costs[u], l, mid);
+    costs[v + 2].apply(costs[u], mid, r);
+    costs[u] = U();
   }
 
-  void apply(int L, int R, const U& w, int u, int l, int r) {
+  void apply(const int& L, const int& R, const U& w, int u, int l, int r) {
     if (l >= R || r <= L) {
       return;
     }
     if (l >= L && r <= R) {
-      tree[u] += w;
-      weights[u] += w;
+      values[u].apply(w, l, r);
+      costs[u].apply(w, l, r);
       return;
     }
     push(u, l, r);
@@ -61,20 +74,20 @@ template <typename T, typename U> struct segtree {
     pull(u);
   }
 
-  void apply(int L, int R, const U& w) { 
+  void apply(const int& L, const int& R, const U& w) {
     apply(L, R, w, 0, 0, m); 
   }
 
-  void apply(int at, const U& w) { 
+  void apply(const int& at, const U& w) { 
     apply(at, at + 1, w, 0, 0, m); 
   }
-  
-  T get(int L, int R, int u, int l, int r) {
+
+  T get(const int& L, const int& R, int u, int l, int r) {
     if (l >= R || r <= L) {
       return T();
     }
     if (l >= L && r <= R) {
-      return tree[u];
+      return values[u];
     }
     push(u, l, r);
     int mid = (l + r) >> 1, v = u << 1;
@@ -83,11 +96,11 @@ template <typename T, typename U> struct segtree {
     return res;
   }
 
-  T get(int L, int R) { 
+  T get(const int& L, const int& R) { 
     return get(L, R, 0, 0, m); 
   }
 
-  T operator[] (int u) { 
+  T operator[] (const int& u) {
     return get(u, u + 1, 0, 0, m); 
   }
 
@@ -98,7 +111,7 @@ template <typename T, typename U> struct segtree {
     push(u, l, r);
     int mid = (l + r) >> 1, v = u << 1;
     int res;
-    if (fun(tree[v + 1])) {
+    if (fun(values[v + 1])) {
       res = find_first_knowingly(fun, v + 1, l, mid);
     } else {
       res = find_first_knowingly(fun, v + 2, mid, r);
@@ -107,12 +120,12 @@ template <typename T, typename U> struct segtree {
     return res;
   }
 
-  int find_first(int L, int R, const std::function<bool(const T&)>& fun, int u, int l, int r) {
+  int find_first(const int& L, const int& R, const std::function<bool(const T&)>& fun, int u, int l, int r) {
     if (l >= R || r <= L) {
       return -1;
     }
     if (l >= L && r <= R) {
-      if (!fun(tree[u])) {
+      if (!fun(values[u])) {
         return -1;
       }
       return find_first_knowingly(fun, u, l, r);
@@ -127,7 +140,7 @@ template <typename T, typename U> struct segtree {
     return res;
   }
 
-  int find_first(int L, int R, const std::function<bool(const T&)>& fun) {
+  int find_first(const int& L, const int& R, const std::function<bool(const T&)>& fun) {
     return find_first(L, R, fun, 0, 0, m);
   }
 
@@ -138,7 +151,7 @@ template <typename T, typename U> struct segtree {
     push(u, l, r);
     int mid = (l + r) >> 1, v = u << 1;
     int res;
-    if (fun(tree[v + 2])) {
+    if (fun(values[v + 2])) {
       res = find_last_knowingly(fun, v + 2, mid, r);
     } else {
       res = find_last_knowingly(fun, v + 1, l, mid);
@@ -147,12 +160,12 @@ template <typename T, typename U> struct segtree {
     return res;
   }
 
-  int find_last(int L, int R, const std::function<bool(const T&)>& fun, int u, int l, int r) {
+  int find_last(const int& L, const int& R, const std::function<bool(const T&)>& fun, int u, int l, int r) {
     if (l >= R || r <= L) {
       return -1;
     }
     if (l >= L && r <= R) {
-      if (!fun(tree[u])) {
+      if (!fun(values[u])) {
         return -1;
       }
       return find_last_knowingly(fun, u, l, r);
@@ -167,77 +180,38 @@ template <typename T, typename U> struct segtree {
     return res;
   }
 
-  int find_last(int L, int R, const std::function<bool(const T&)>& fun) {
+  int find_last(const int& L, const int& R, const std::function<bool(const T&)>& fun) {
     return find_last(L, R, fun, 0, 0, m);
   }
-};                  
+};
 
 using namespace std;
- 
-struct weight {
-  // TODO args...
 
-  weight() {
-    clear();
-  }
+struct Cost {
+  long long add;
 
-  weight(args...) {
-    // TODO
-  }
-  
-  void clear() {
-    // TODO must; set to identity
-  } 
-  bool empty() const {
-    // TODO must; set to identity
-  } 
-  void operator += (const weight& cost) {
-    // TODO
+  Cost(long long a = 0) : add(a) {}
+
+  void apply(const Cost& o, int l, int r) {
+    add += o.add;
   }
 };
-                              
-struct node {
-  // TODO args...
-                            
-  node() {
-    clear();
-  }
-                            
-  node(args...) {
-    // TODO
+
+struct Value {
+  long long sum;
+
+  Value(long long s = 0) : sum(s) {}
+
+  void apply(const Cost& o, int l, int r) {
+    sum += o.add * (r - l);
   }
 
-  void clear() {
-    // TODO use if necessary; set to identity
-  }
-
-  bool empty() const {      
-    // TODO use if necessary; set to identity
-  }                              
-
-  void operator += (const weight& cost) {
-    if (cost.empty()) {
-      return;
-    }                   
-    // TODO
-  }
-
-  friend node operator+ (const node& lhs, const node& rhs) {
-    if (rhs.empty()) {
-      return lhs;
-    }
-    if (lhs.empty()) {
-      return rhs;
-    }
-    node res;
-    // TODO merge `lhs` and `rhs` to calculate result
+  friend Value operator + (const Value& lhs, const Value& rhs) {
+    Value res;
+    res.sum = lhs.sum + rhs.sum;
     return res;
   }
-}; 
+};
 
-/*
-  segtree<node, weight> S(n);
-  vector<T> base(n);
-  S.build(base);
-*/
-
+// When applying or merging, check if value/cost is empty
+// Or set to handle identity

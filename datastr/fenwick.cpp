@@ -2,8 +2,10 @@
 #include <bits/stdc++.h>
 
 // tested
+// lb returns x -> sum(x - 1) < v && sum(x) >= v
 
-template <typename T> struct Fenwick {
+template <typename T>
+struct Fenwick {
   int n;
   std::vector<T> tree;
   Fenwick(int s = 0) : n(s), tree(s) {};
@@ -13,7 +15,7 @@ template <typename T> struct Fenwick {
       u |= u + 1;
     }
   }
-  T operator[] (int u) {
+  T sum(int u) {
     T v {};
     while (u >= 0) {
       v += tree[u];
@@ -21,18 +23,21 @@ template <typename T> struct Fenwick {
     }
     return v;
   }
+  T sum(int l, int r) {
+    assert(0 <= l && l <= r && r <= n);
+    return sum(r) - sum(l);
+  }
   int lower_bound(T v) {
     int u = 0;
     for (int p = 1 << std::__lg(n); p > 0; p /= 2) {
       if (u + p <= n && tree[u + p - 1] < v) {
         u += p;
         v -= tree[u - 1];
-      }       
+      }
     }
     return u;
   }
 };
-// lb returns x -> sum(x - 1) < v && sum(x) >= v;
 
 template <typename T> struct Fenwick2D {
   int n, m;

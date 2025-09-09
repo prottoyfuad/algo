@@ -1,26 +1,33 @@
 
-template <typename T> struct segtree {
+template <typename T>
+struct Segtree {
   int n;
   std::vector<T> tree;
 
-  segtree(int s = 0) : n(1) {
-    while (n < s) n *= 2;
-    tree.assign(n * 2 - 1, T());
+  Segtree(int s = 0) {
+    init(std::vector(s, T()));
   }
 
-  template <typename U>
-  segtree(const std::vector<U>& a) {
-    build(a);
+  template <typename V>
+  void init(int s, const V& base) {
+    init(std::vector(s, base));
   }
-  
-  template <typename U> 
-  void build(const std::vector<U>& a) {
-    int s = (int) a.size();
+
+  template <typename V>
+  Segtree(const std::vector<V>& base) {
+    init(base);
+  }
+
+  template <typename V>
+  void init(const std::vector<V>& base) {
+    int s = (int) base.size();
     n = 1;
-    while (n < s) n *= 2;
+    while (n < s) {
+      n *= 2;
+    }
     tree.assign(n * 2 - 1, T());
     for (int i = 0; i < s; i++) {
-      tree[n - 1 + i] = (T) a[i];
+      tree[n + i - 1] = (T) base[i];
     }
   }
   
@@ -57,17 +64,16 @@ template <typename T> struct segtree {
 };
 
 using namespace std;
- 
-struct node {
+
+struct Node {
   var val = ...;
 
-  node(args ...) {
+  Node(args ...) {
     // default and implicit constructors
   }
 
-  void operator += (const node& o) {
+  void operator += (const Node& o) {
     // merge
     // commutative; order doesn't matter
   }
 };
-

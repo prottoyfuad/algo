@@ -52,12 +52,12 @@ std::ostream& operator << (std::ostream &stream, const T_container &v) {
 std::string sep = "";
 void debug_() { 
   sep = ""; 
-  std::cout << std::endl; 
+  std::cerr << std::endl; 
 }
 
 template <typename T, typename... Args>
 void debug_(T x, Args... args) {
-  std::cout << sep << x;
+  std::cerr << sep << x;
   sep = ", ";
   debug_(args...);
 }
@@ -65,7 +65,5 @@ void debug_(T x, Args... args) {
 } // End of namespace debugger
 
 // #define debug_(...) debugger::debug_(__VA_ARGS__)
-#define debug(...) std::cout << __LINE__ << ". [" << #__VA_ARGS__ << "]: ", debugger::debug_(__VA_ARGS__)
-
+#define debug(...) std::cerr << __LINE__ << ". [" << #__VA_ARGS__ << "]: ", debugger::debug_(__VA_ARGS__)
 #endif
-

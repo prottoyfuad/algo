@@ -1,91 +1,44 @@
-/*
- * Range Affine Range Sum
- * https://atcoder.jp/contests/practice2/tasks/practice2_k
- * Segment tree
- * Update: L, R, B, C = for each L <= x <= R, set a[x] = a[x] * B + C
- * Query: L, R = sum in range
- */
 
-#include <vector>
-#include <cassert>  
-#include <iostream>  
-
-const long long P = 998244353;
-                               
-struct Segtree {       
+template <typename T, typename U>
+struct Segtree {
   int low, high;
-  Segtree *l, *r;
-                      
-  using T = long long;
-  using U = std::pair<long long, long long>;
-     
-  static constexpr T def_value() {
-    return 0ll;
-  }
+  Segtree<T, U> *l, *r;
 
-  static constexpr U def_weight() {
-    return std::make_pair(1ll, 0ll);
-  }
+  T value;
+  U cost;
 
-  T value; 
-  U weight;                 
-
-  bool has_weight() {
-    return weight != def_weight();
-  }
-  
-  void clear_weight() {
-    weight = def_weight();
-  }
-
-  static T unite(T u, T v) {
-    return (u + v) % P;
-  }
-
-  void add_cost(U cost) {
-    weight.first *= cost.first;
-    weight.first %= P;
-    weight.second *= cost.first;
-    weight.second += cost.second;
-    weight.second %= P;
-  }
-
-  void mapping(U cost) {
-    value *= cost.first;
-    value %= P;
-    value += cost.second * (high - low);
-    value %= P;
-  }     
-
-  Segtree(int lo, int hi) : low(lo), high(hi), l(0), r(0) {
-    value = def_value();
-    weight = def_weight();
-  }
+  Segtree(int lo, int hi) : low(lo), high(hi), l(0), r(0), value(T()), cost(U()) {}
 
   ~Segtree() {
     if (l) delete l;
     if (r) delete r;
   }
 
-  inline void push() {
-    if (low + 1 < high) {                                 
+  void push() {
+    if (low + 1 < high) {
       int mid = (low + high) >> 1;
-      if (!l) l = new Segtree(low, mid);
-      if (!r) r = new Segtree(mid, high);
-      if (has_weight()) {
-        l->mapping(weight);
-        l->add_cost(weight);
-        r->mapping(weight);
-        r->add_cost(weight);
-        clear_weight();
+      if (!l) {
+        l = new Segtree(low, mid);
       }
+      if (!r) {
+        r = new Segtree(mid, high);
+      }
+      l->value.apply(cost, low, mid);
+      r->value.apply(cost, mid, high);
+      l->cost.apply(cost, low, mid);
+      r->cost.apply(cost, mid, high);
+      cost = U();
     }
   }
 
-  void apply(int x, int y, U v) {
-    if (low >= x && high <= y) {
-      mapping(v); 
-      add_cost(v);
+  void pull() {
+    value = l->value + r->value;
+  }
+
+  void apply(const int& x, const int& y, const U& v) {
+    if (x <= low && high <= y) {
+      value.apply(v, low, high); 
+      cost.apply(v, low, high);
       return;
     }
     push();
@@ -96,51 +49,67 @@ struct Segtree {
     if (mid < y) {
       r->apply(std::max(x, mid), y, v);
     }
-    value = unite(l->value, r->value);
+    pull();
   }
 
-  T get(int x, int y) {                                                                   
-    if (low >= x && high <= y) { 
+  T get(const int& x, const int& y) {
+    if (x <= low && high <= y) {
       return value;
     }
     push();
     int mid = (low + high) >> 1;
-    T res = def_value();
+    T res = T();
     if (x < mid) {
       res = unite(l->get(x, std::min(y, mid)), res);
     }
     if (mid < y) {
       res = unite(res, r->get(std::max(x, mid), y));
     }
-    value = unite(l->value, r->value);
+    pull();
     return res;
   }
 };
 
 using namespace std;
 
+struct Cost {
+  long long add;
+
+  Cost(long long a = 0) : add(a) {}
+
+  void apply(const Cost& o, int l, int r) {
+    add += o.add;
+  }
+};
+
+struct Value {
+  long long sum;
+
+  Value(long long s = 0) : sum(s) {}
+
+  void apply(const Cost& o, int l, int r) {
+    sum += o.add * (r - l);
+  }
+
+  friend Value operator + (const Value& lhs, const Value& rhs) {
+    Value res;
+    res.sum = lhs.sum + rhs.sum;
+    return res;
+  }
+};
+
+// When applying or merging, check if value/cost is empty
+// Or set to handle identity
+
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
-  int N, Q;
-  cin >> N >> Q;
-  Segtree S(0, N); 
-  for (int i = 0; i < N; i++) {
-    int x;
-    cin >> x;
-    S.apply(i, i + 1, make_pair(1, x));
-  }
-  for (int i = 0; i < Q; i++) {
-    int t, l, r;
-    cin >> t >> l >> r;
-    if (t) {
-      cout << S.get(l, r) << '\n';
-    } else {
-      int b, c;
-      cin >> b >> c;
-      S.apply(l, r, make_pair(b, c));
-    }
-  }
+
+  int N;
+  Segtree<Value, Cost> S(0, N); 
+
+  S.apply(l, r, Cost());
+  Value value = S.get(l, r);
+
   return 0;
 }
-
