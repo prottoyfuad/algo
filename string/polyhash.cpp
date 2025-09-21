@@ -95,4 +95,3 @@ struct Polyhash {
     return h;
   }
 };
-

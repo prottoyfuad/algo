@@ -1,6 +1,6 @@
 
 template <typename T>
-struct Segtree {                                                          
+struct Segtree {
   int s, n;
   std::vector<T> tree;
 
@@ -33,15 +33,12 @@ struct Segtree {
 
   void push(int u, int l, int r) {
     int m = (l + r) >> 1, v = u << 1;
-    // l = std::min(l, s);
-    // m = std::min(m, s);
-    // r = std::min(r, s);
     tree[v + 1].apply(tree[u], l, m);
     tree[v + 2].apply(tree[u], m, r);
     tree[u] = T();
   }
 
-  void apply(int L, int R, const T& w, int u, int l, int r) {
+  void apply(const int& L, const int& R, const T& w, int u, int l, int r) {
     if (l >= R || r <= L) {
       return;
     }
@@ -55,11 +52,11 @@ struct Segtree {
     apply(L, R, w, v + 2, mid, r);
   }
 
-  void apply(int L, int R, const T& w) { 
+  void apply(const int& L, const int& R, const T& w) { 
     apply(L, R, w, 0, 0, n); 
   }
 
-  void apply(int at, const T& w) { 
+  void apply(const int& at, const T& w) { 
     apply(at, at + 1, w, 0, 0, n); 
   }
 
@@ -67,33 +64,57 @@ struct Segtree {
     if (l > p || r <= p) {
       return T();
     }
-    if (l >= p && r <= p + 1) {
-      return values[u];
+    if (r - l == 1) {
+      return tree[u];
     }
     push(u, l, r);
     int mid = (l + r) >> 1, v = u << 1;
-    T res = get(p v + 1, l, mid) + get(p v + 2, mid, r);
-    pull(u);
+    T res = get(p, v + 1, l, mid) + get(p, v + 2, mid, r);
     return res;
   }
   
   T operator[] (const int& u) {
     return get(u, 0, 0, n);
   }
-};                  
+};
 
 using namespace std;
 
 struct Node {
-  var val = ...;
+  var ...
 
-  Node(args ...) {
-    // set default and implicit constructors
+  Node() {
+    ...set default constructor
   }
 
   void apply(const Node& o, int l, int r) {
-    // merge
-    // not commutative; order is important
+    ...
   }
-};
 
+  friend Node operator + (const Node& lhs, const Node& rhs) {
+    Node res;
+    ...merge, not commutative; order is important
+    return res;
+  }
+
+  var value() {
+    ...
+  }
+
+  string toString() {
+    ...
+    return "";
+  }
+};                
+
+void show(Segtree<Node> S) {
+  for (int s = 0, k = 1; s < S.tree.size(); k += k) {
+    vector<string> L;
+    for (int i = 0; i < k; i++) {
+      auto node = S.tree[s + i];
+      L.push_back(node.toString());
+    }
+    debug(L);
+    s += k;
+  }
+}

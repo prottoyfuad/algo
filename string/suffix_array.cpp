@@ -7,6 +7,7 @@
 using namespace std;
 
 /// brute - O(n.logn.logn)
+
 vector<int> suffix_array_brute(string& s) {
   s += '$';
   int n = (int) s.length();
@@ -38,7 +39,8 @@ vector<int> suffix_array_brute(string& s) {
 }
 
 /// O(n.logn) < default with 2 times radix sort;
-vector<int> suffix_array(const string& s) {
+
+vector<int> suffix_array_simple(const string& s) {
   int n = s.length() + 1;
   vector<int> order(n), rank(n);
   iota(order.begin(), order.end(), 0);
@@ -75,7 +77,8 @@ vector<int> suffix_array(const string& s) {
 
 /// further optimization on O(nlogn), radix once;
 /// default O(nlogn) should be fine on most case, use that if not necessary
-vector<int> suffix_array2(const string& s) {
+
+vector<int> suffix_array(const string& s) {
   int n = s.length() + 1;
   vector<int> order(n), rank(n);
   iota(order.begin(), order.end(), 0);
@@ -120,17 +123,17 @@ vector<int> compute_lcp(const string& s, const vector<int>& sa) {
   for (int i = 0; i < n; i++) {
     phi[sa[i]] = i;
   }
-  int prefix = 0;
+  int pre = 0;
   for (int i = 0; i < n; i++) {
-    // if(!phi[i]) lcp[phi[i]] = prefix = 0;
+    // if(!phi[i]) lcp[phi[i]] = pre = 0;
     if (!phi[i]) continue;
     
-    int a = sa[phi[i]] + prefix;
-    int b = sa[phi[i] - 1] + prefix;
-    while (s[a++] == s[b++]) prefix++;
+    int a = sa[phi[i]] + pre;
+    int b = sa[phi[i] - 1] + pre;
+    while (s[a++] == s[b++]) pre++;
     
-    lcp[phi[i]] = prefix;
-    prefix = max(prefix - 1, 0);
+    lcp[phi[i]] = pre;
+    pre = max(pre - 1, 0);
   }
   return lcp;
 }
@@ -143,7 +146,7 @@ string get_lcs(const string& s, const string& t) {
   int n = sa.size();
   
   auto partition = [&](int k) {
-    return k >= x + 1;
+    return k > x;
   };
   int ans = 0, pos;
   
@@ -161,6 +164,70 @@ string get_lcs(const string& s, const string& t) {
   string ret;
   if (ans) ret = t.substr(pos, ans);
   return ret;
+}
+
+// Answer Q queries:
+// Find position of kth occurance of substr[ s[l]..s[r] ] in S
+void findKth(const string& s) {
+  int n = s.length();
+  auto sa = suffix_array(s);
+  auto lcp = compute_lcp(s, sa);
+  vector<int> phi(n + 1);
+  for (int i = 0; i <= n; i++) {
+    phi[sa[i]] = i;
+  }
+  SparseTable<int> st(lcp, [](const int& x, const int& y) { return min(x, y); });
+  MergeTree<int> mst(sa);
+  int q;
+  cin >> q;
+  while (q--) {
+    int l, r, k;
+    cin >> l >> r >> k;
+    l--;
+    int d = r - l;
+    int p = phi[l];
+    int L = p, R = p + 1;
+    if (lcp[p] >= d) {
+      int lo = 0, hi = p + 1;
+      while (lo + 1 < hi) {
+        int x = (lo + hi) / 2;
+        if (st.get(x, p + 1) >= d) {
+          hi = x;
+        } else {
+          lo = x;
+        }
+      }
+      L = hi - 1;
+    }
+    if (p < n) {
+      int lo = p, hi = n + 1;
+      while (lo + 1 < hi) {
+        int x = (lo + hi) / 2;
+        if (st.get(p, x + 1) >= d) {
+          lo = x;
+        } else {
+          hi = x;
+        }
+      }
+      R = lo + 1;
+    }
+    if (R - L < k) {
+      cout << -1 << '\n';
+    } else {    
+      int lo = -1, hi = n;
+      while (lo + 1 < hi) {
+        int x = (lo + hi) / 2;
+        int cnt = mst.count(L, R, x);
+        if (cnt < k) {
+          lo = x;
+        } else {
+          hi = x;
+        }
+      }
+      cout << lo + 1 << '\n';
+    }
+  }
+  return;
 }
 
 int main() {

@@ -31,7 +31,7 @@ struct Segtree {
     }
   }
   
-  void apply(int L, int R, const T& w, int u, int l, int r) {
+  void apply(const int& L, const int& R, const T& w, int u, int l, int r) {
     if (l >= R || r <= L) {
       return;
     }
@@ -44,11 +44,11 @@ struct Segtree {
     apply(L, R, w, v + 2, mid, r);
   }
 
-  void apply(int L, int R, const T& w) { 
+  void apply(const int& L, const int& R, const T& w) { 
     apply(L, R, w, 0, 0, n); 
   }
 
-  void apply(int at, const T& w) { 
+  void apply(const int& at, const T& w) { 
     apply(at, at + 1, w, 0, 0, n); 
   }
   

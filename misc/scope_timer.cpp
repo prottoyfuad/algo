@@ -5,7 +5,6 @@
 #include "../algo/debug.h"
 #else
 #define debug(...) 0
-#define _debug(...) 0
 #endif
 
 struct ScopeTimer {
@@ -19,7 +18,7 @@ struct ScopeTimer {
     return (clock_now() - start) / 1e9; 
   }
   ~ScopeTimer() { 
-    _debug("@ScopeTime:", scopeName, timeElapsed());
+    debug("@ScopeTime:", scopeName, timeElapsed());
   }
 };
 

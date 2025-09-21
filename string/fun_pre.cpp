@@ -4,14 +4,8 @@
 
 using namespace std;
 
-int main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
-  
-  string s;
-  cin >> s;
+vector<int> pre_fun(const string& s) {
   int n = s.length();
-
   vector<int> pre(n + 1);
   pre[0] = -1; 
   for (int i = 0; i < n; i++) {
@@ -21,6 +15,12 @@ int main() {
     }
     pre[i + 1] = j + 1;
   }
+  return pre;
+}
+
+int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(0);
 
   return 0;
 }

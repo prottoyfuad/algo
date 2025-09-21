@@ -4,10 +4,10 @@ struct Segtree {
   int low, high;
   Segtree<T, U> *l, *r;
 
-  T value;
+  T node;
   U cost;
 
-  Segtree(int lo, int hi) : low(lo), high(hi), l(0), r(0), value(T()), cost(U()) {}
+  Segtree(int lo, int hi) : low(lo), high(hi), l(0), r(0), node(T()), cost(U()) {}
 
   ~Segtree() {
     if (l) delete l;
@@ -23,8 +23,8 @@ struct Segtree {
       if (!r) {
         r = new Segtree(mid, high);
       }
-      l->value.apply(cost, low, mid);
-      r->value.apply(cost, mid, high);
+      l->node.apply(cost, low, mid);
+      r->node.apply(cost, mid, high);
       l->cost.apply(cost, low, mid);
       r->cost.apply(cost, mid, high);
       cost = U();
@@ -32,12 +32,12 @@ struct Segtree {
   }
 
   void pull() {
-    value = l->value + r->value;
+    node = l->node + r->node;
   }
 
   void apply(const int& x, const int& y, const U& v) {
     if (x <= low && high <= y) {
-      value.apply(v, low, high); 
+      node.apply(v, low, high); 
       cost.apply(v, low, high);
       return;
     }
@@ -54,7 +54,7 @@ struct Segtree {
 
   T get(const int& x, const int& y) {
     if (x <= low && high <= y) {
-      return value;
+      return node;
     }
     push();
     int mid = (low + high) >> 1;
@@ -82,23 +82,23 @@ struct Cost {
   }
 };
 
-struct Value {
+struct Node {
   long long sum;
 
-  Value(long long s = 0) : sum(s) {}
+  Node(long long s = 0) : sum(s) {}
 
   void apply(const Cost& o, int l, int r) {
     sum += o.add * (r - l);
   }
 
-  friend Value operator + (const Value& lhs, const Value& rhs) {
-    Value res;
+  friend Node operator + (const Node& lhs, const Node& rhs) {
+    Node res;
     res.sum = lhs.sum + rhs.sum;
     return res;
   }
 };
 
-// When applying or merging, check if value/cost is empty
+// When applying or merging, check if node/cost is empty
 // Or set to handle identity
 
 int main() {
@@ -106,10 +106,10 @@ int main() {
   cin.tie(0);
 
   int N;
-  Segtree<Value, Cost> S(0, N); 
+  Segtree<Node, Cost> S(0, N); 
 
   S.apply(l, r, Cost());
-  Value value = S.get(l, r);
+  Node node = S.get(l, r);
 
   return 0;
 }

@@ -24,8 +24,8 @@ struct Fenwick {
     return v;
   }
   T sum(int l, int r) {
-    assert(0 <= l && l <= r && r <= n);
-    return sum(r) - sum(l);
+    assert(0 <= l && l <= r && r < n);
+    return sum(r) - sum(l - 1);
   }
   int lower_bound(T v) {
     int u = 0;
@@ -39,7 +39,8 @@ struct Fenwick {
   }
 };
 
-template <typename T> struct Fenwick2D {
+template <typename T>
+struct Fenwick2D {
   int n, m;
   std::vector<Fenwick<T>> tree;
   Fenwick2D(int a = 0, int b = 0) : n(a) {
@@ -62,13 +63,14 @@ template <typename T> struct Fenwick2D {
   }
 };
 
-//~//
-  
-template <typename T> struct fenwick {
+// 1-indexed
+
+template <typename T>
+struct fenwick {
   int n;
   std::vector<T> data;
   fenwick() : n(0) {}
-  fenwick(int n_) : n(n_), data(n_) {}
+  fenwick(int s) : n(s + 1), data(s + 1) {}
   void add(int p, T x) {
     p++;
     assert(0 < p && p <= n);
@@ -77,22 +79,13 @@ template <typename T> struct fenwick {
       p += p & -p;
     }
   }
-  T sum(int r) {
+  T sum(int p) {
     T s = 0;
-    while (r > 0) {
-      s += data[r - 1];
-      r -= r & -r;
+    while (p > 0) {
+      s += data[p - 1];
+      p -= r & -p;
     }
     return s;
-  }
-  void add(int l, int r, T w) {
-    assert(0 <= l && l <= r && r <= n);
-    add(l, w);
-    add(r, -w);
-  }
-  T sum(int l, int r) {
-    assert(0 <= l && l <= r && r <= n);
-    return sum(r) - sum(l);
   }
 };
 

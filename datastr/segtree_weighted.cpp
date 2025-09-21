@@ -2,7 +2,7 @@
 template <typename T, typename U>
 struct Segtree {
   int n, m;
-  std::vector<T> values;
+  std::vector<T> nodes;
   std::vector<U> costs;
 
   Segtree(int s = 0) {
@@ -26,10 +26,10 @@ struct Segtree {
     while (m < n) {
       m *= 2;
     }
-    values.assign(m * 2 - 1, T());
+    nodes.assign(m * 2 - 1, T());
     costs.assign(m * 2 - 1, U());
     for (int i = 0; i < n; i++) {
-      values[i + m - 1] = (T) base[i];
+      nodes[i + m - 1] = (T) base[i];
     }
     for (int i = m - 2; i >= 0; i--) {
       pull(i);
@@ -37,22 +37,19 @@ struct Segtree {
   }
 
   void clear() {    
-    std::fill(values.begin(), values.end(), T());
+    std::fill(nodes.begin(), nodes.end(), T());
     std::fill(costs.begin(), costs.end(), U());
   }
 
   void pull(int u) {
     int v = u << 1;
-    values[u] = values[v + 1] + values[v + 2];
+    nodes[u] = nodes[v + 1] + nodes[v + 2];
   }
 
   void push(int u, int l, int r) {
     int mid = (l + r) >> 1, v = u << 1;
-    // l = std::min(l, n);
-    // r = std::min(r, n);
-    // mid = std::min(mid, n);
-    values[v + 1].apply(costs[u], l, mid);
-    values[v + 2].apply(costs[u], mid, r);
+    nodes[v + 1].apply(costs[u], l, mid);
+    nodes[v + 2].apply(costs[u], mid, r);
     costs[v + 1].apply(costs[u], l, mid);
     costs[v + 2].apply(costs[u], mid, r);
     costs[u] = U();
@@ -63,7 +60,7 @@ struct Segtree {
       return;
     }
     if (l >= L && r <= R) {
-      values[u].apply(w, l, r);
+      nodes[u].apply(w, l, r);
       costs[u].apply(w, l, r);
       return;
     }
@@ -87,7 +84,7 @@ struct Segtree {
       return T();
     }
     if (l >= L && r <= R) {
-      return values[u];
+      return nodes[u];
     }
     push(u, l, r);
     int mid = (l + r) >> 1, v = u << 1;
@@ -111,7 +108,7 @@ struct Segtree {
     push(u, l, r);
     int mid = (l + r) >> 1, v = u << 1;
     int res;
-    if (fun(values[v + 1])) {
+    if (fun(nodes[v + 1])) {
       res = find_first_knowingly(fun, v + 1, l, mid);
     } else {
       res = find_first_knowingly(fun, v + 2, mid, r);
@@ -125,7 +122,7 @@ struct Segtree {
       return -1;
     }
     if (l >= L && r <= R) {
-      if (!fun(values[u])) {
+      if (!fun(nodes[u])) {
         return -1;
       }
       return find_first_knowingly(fun, u, l, r);
@@ -151,7 +148,7 @@ struct Segtree {
     push(u, l, r);
     int mid = (l + r) >> 1, v = u << 1;
     int res;
-    if (fun(values[v + 2])) {
+    if (fun(nodes[v + 2])) {
       res = find_last_knowingly(fun, v + 2, mid, r);
     } else {
       res = find_last_knowingly(fun, v + 1, l, mid);
@@ -165,7 +162,7 @@ struct Segtree {
       return -1;
     }
     if (l >= L && r <= R) {
-      if (!fun(values[u])) {
+      if (!fun(nodes[u])) {
         return -1;
       }
       return find_last_knowingly(fun, u, l, r);
@@ -197,17 +194,17 @@ struct Cost {
   }
 };
 
-struct Value {
+struct Node {
   long long sum;
 
-  Value(long long s = 0) : sum(s) {}
+  Node(long long s = 0) : sum(s) {}
 
   void apply(const Cost& o, int l, int r) {
     sum += o.add * (r - l);
   }
 
-  friend Value operator + (const Value& lhs, const Value& rhs) {
-    Value res;
+  friend Node operator + (const Node& lhs, const Node& rhs) {
+    Node res;
     res.sum = lhs.sum + rhs.sum;
     return res;
   }

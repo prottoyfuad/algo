@@ -6,33 +6,7 @@
 
 using namespace std;
 
-template <typename T, typename Fun = function<T(const T&, const T&)>>
-class SparseTable {
- private:
-  int n, m;
-  vector<vector<T>> v;
-  Fun fun;
- public:
-  SparseTable() : n(), m() {}
-  SparseTable(const vector<T>& a, const Fun& f) : fun(f) {
-    n = static_cast<int> (a.size());
-    m = 32 - __builtin_clz(n);
-    v.resize(m);
-    v[0] = a;
-    for(int x = 1; x < m; x++) {
-      int k = (n - (1 << x) + 1);
-      v[x].resize(k);
-      for(int i = 0; i < k; i++) {
-        v[x][i] = fun(v[x - 1][i], v[x - 1][i + (1 << (x - 1))]);
-      }
-    }
-  }
-  inline T get(int l, int r) const {
-    int d = r - l + 1;
-    int x = 32 - __builtin_clz(d) - 1;
-    return fun(v[x][l], v[x][r - (1 << x) + 1]);
-  }
-};
+#include "../datastr/sparse_table.cpp"
 
 class suffix_array {
  public:
