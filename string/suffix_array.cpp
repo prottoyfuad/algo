@@ -1,91 +1,91 @@
 ﻿
-#include <vector>
-#include <numeric>
-#include <iostream>
-#include <algorithm>
-
-using namespace std;
-
-/// brute - O(n.logn.logn)
-
-vector<int> suffix_array_brute(string& s) {
-  s += '$';
-  int n = (int) s.length();
-  vector<int> order(n), cost(n);
-  iota(order.begin(), order.end(), 0);
-  sort(order.begin(), order.end(), [&](int i, int j) {
-    return s[i] < s[j];
-  });
-  for (int i = 1; i < n; i++) {
-    int u = order[i - 1], v = order[i];
-    cost[v] = cost[u] + (s[u] != s[v]);
+// fastest implementation with few more memory(vectors)
+// author: tourist
+template <typename T>
+vector<int> suffix_array_tourist(int n, const T &s, int char_bound) {
+  vector<int> a(n);
+  if (n == 0) {
+    return a;
   }
-  for (int x = 1; x < n; x <<= 1) {
-    vector<pair<int, int>> segment(n);
+  if (char_bound != -1) {
+    vector<int> aux(char_bound, 0);
     for (int i = 0; i < n; i++) {
-      segment[i] = {cost[i], cost[(i + x) % n]};
+      aux[s[i]]++;
     }
-    sort(order.begin(), order.end(), [&](int i, int j) {
-      return segment[i] < segment[j];
-    });
-    cost[order[0]] = 0;
-    for (int i = 1; i < n; i++) {
-      int u = order[i - 1], v = order[i];
-      cost[v] = cost[u] + (segment[u] != segment[v]);
+    int sum = 0;
+    for (int i = 0; i < char_bound; i++) {
+      int add = aux[i];
+      aux[i] = sum;
+      sum += add;
     }
+    for (int i = 0; i < n; i++) {
+      a[aux[s[i]]++] = i;
+    }
+  } else {
+    iota(a.begin(), a.end(), 0);
+    sort(a.begin(), a.end(), [&s](int i, int j) { return s[i] < s[j]; });
   }
-  s.pop_back();
-  return order;
+  vector<int> sorted_by_second(n);
+  vector<int> ptr_group(n);
+  vector<int> new_group(n);
+  vector<int> group(n);
+  group[a[0]] = 0;
+  for (int i = 1; i < n; i++) {
+    group[a[i]] = group[a[i - 1]] + (!(s[a[i]] == s[a[i - 1]]));
+  }
+  int cnt = group[a[n - 1]] + 1;
+  int step = 1;
+  while (cnt < n) {
+    int at = 0;
+    for (int i = n - step; i < n; i++) {
+      sorted_by_second[at++] = i;
+    }
+    for (int i = 0; i < n; i++) {
+      if (a[i] - step >= 0) {
+        sorted_by_second[at++] = a[i] - step;
+      }
+    }
+    for (int i = n - 1; i >= 0; i--) {
+      ptr_group[group[a[i]]] = i;
+    }
+    for (int i = 0; i < n; i++) {
+      int x = sorted_by_second[i];
+      a[ptr_group[group[x]]++] = x;
+    }
+    new_group[a[0]] = 0;
+    for (int i = 1; i < n; i++) {
+      if (group[a[i]] != group[a[i - 1]]) {
+        new_group[a[i]] = new_group[a[i - 1]] + 1;
+      } else {
+        int pre = (a[i - 1] + step >= n ? -1 : group[a[i - 1] + step]);
+        int cur = (a[i] + step >= n ? -1 : group[a[i] + step]);
+        new_group[a[i]] = new_group[a[i - 1]] + (pre != cur);
+      }
+    }
+    swap(group, new_group);
+    cnt = group[a[n - 1]] + 1;
+    step <<= 1;
+  }
+  return a;
 }
 
-/// O(n.logn) < default with 2 times radix sort;
+template <typename T>
+vector<int> suffix_array_tourist(const T &s, int char_bound) {
+  return suffix_array_tourist((int) s.size(), s, char_bound);
+}
 
-vector<int> suffix_array_simple(const string& s) {
+// best: O(nlogn), radix once;
+// default O(nlogn) should be fine on most case, use that if not necessary
+
+template <typename T>
+vector<int> suffix_array(const T& s, int char_bound = 256) {
   int n = s.length() + 1;
   vector<int> order(n), rank(n);
   iota(order.begin(), order.end(), 0);
   for (int i = 0; i < n - 1; i++) {
     rank[i] = s[i];
   }
-  auto radix = [&] (int k) {
-    int m = max(n, 256);
-    vector<int> c(m + 1);
-    for (int e : rank) c[e + 1]++;
-    for (int i = 0; i < m; i++) {
-      c[i + 1] += c[i];
-    }
-    vector<int> next_order(n);
-    for (int i : order) {
-      int j = c[rank[(i + k) % n]]++;
-      next_order[j] = i;
-    }
-    swap(order, next_order);
-  };
-  for (int k = 1; k < n; k <<= 1) {
-    radix(k);
-    radix(0);
-    vector<int> next_rank(n);
-    int delta = 0;     
-    for (int i = 1; i < n; i++) {
-      delta += rank[order[i]] != rank[order[i - 1]] || rank[(order[i] + k) % n] != rank[(order[i - 1] + k) % n];
-      next_rank[order[i]] = delta;
-    }
-    swap(rank, next_rank);
-  }
-  return order;
-}
-
-/// further optimization on O(nlogn), radix once;
-/// default O(nlogn) should be fine on most case, use that if not necessary
-
-vector<int> suffix_array(const string& s) {
-  int n = s.length() + 1;
-  vector<int> order(n), rank(n);
-  iota(order.begin(), order.end(), 0);
-  for (int i = 0; i < n - 1; i++) {
-    rank[i] = s[i];
-  }
-  int m = max(n, 256);
+  int m = max(n, char_bound);
   auto radix = [&]() {
     vector<int> c(m + 1);
     for (int e : rank) c[e + 1]++;
@@ -228,11 +228,4 @@ void findKth(const string& s) {
     }
   }
   return;
-}
-
-int main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
-  
-  return 0;
 }

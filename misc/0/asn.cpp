@@ -1,12 +1,6 @@
 
 #include <bits/stdc++.h>
 
-#ifdef LOCAL
-#include "../algo/debug.h"
-#else 
-#define debug(...) 0
-#endif
-
 using namespace std;
 
 int main() {
@@ -14,9 +8,8 @@ int main() {
   cin.tie(0);
   int tt;
   cin >> tt;
-  for (int tc = 1; tc <= tt; tc++) {
+  while (tt--) {
 
   }
   return 0;
 }
-
