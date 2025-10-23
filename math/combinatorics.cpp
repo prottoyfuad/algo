@@ -2,27 +2,6 @@
 const int N = 2e5 + 1;
 const long long P = 1e9 + 7;
 
-// precalculating inverses
-
-int inv[N], fac[N], ifac[N];
-void calc() {
-  inv[1] = 1;
-  for (int i = 2; i < N; i++){
-    inv[i] = P - inv[P % i] * 1ll * (P / i) % P;
-  }
-  // or this
-  for (int i = 2; i < N; i++) {
-    inv[i] = inv[P % i] * 1ll * (P - P / i) % P;  
-  }
-  fac[0] = ifac[0] = 1;
-  for (int i = 1; i < N; i++) {
-    fac[i] = fac[i - 1] * 1ll * i % P;
-    ifac[i] = ifac[i - 1] * 1ll * inv[i] % P;
-  }
-}
-
-// SIMPLE, with long long
-
 long long power(long long a, long long p) {
   long long ans = 1;
   while (p) {
@@ -73,4 +52,25 @@ vector<vector<int>> dp(int nax = 2002) {
   }
   return f;
 }
- 
+
+// precalculating inverses
+// let, y = 1/x
+// P = kx + r => kx + r == 0 % P
+// r == -kx => ry == -k => y == -k / r
+
+int inv[N], fac[N], ifac[N];
+void calc() {
+  inv[1] = 1;
+  for (int i = 2; i < N; i++){
+    inv[i] = P - inv[P % i] * 1ll * (P / i) % P;
+  }
+  // or this
+  for (int i = 2; i < N; i++) {
+    inv[i] = inv[P % i] * 1ll * (P - P / i) % P;  
+  }
+  fac[0] = ifac[0] = 1;
+  for (int i = 1; i < N; i++) {
+    fac[i] = fac[i - 1] * 1ll * i % P;
+    ifac[i] = ifac[i - 1] * 1ll * inv[i] % P;
+  }
+}
